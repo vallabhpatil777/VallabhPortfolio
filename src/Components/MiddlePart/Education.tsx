@@ -66,7 +66,7 @@ const Education = () => {
                 }
               }, [inView, controls]);
     
-              const isMobile = window.innerWidth < 1024; 
+          
     
               const boxVariants = {
                 hidden: { y: 100, opacity: 0 }, 

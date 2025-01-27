@@ -1,5 +1,5 @@
 import React from "react";
-import { motion, spring, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import reacr from "../../assets/react.svg"
 import javascript from "../../assets/javascript.svg"
 import typescript from "../../assets/typescript.svg"

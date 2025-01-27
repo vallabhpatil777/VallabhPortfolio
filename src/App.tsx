@@ -1,8 +1,3 @@
-import { useState, Suspense } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-
-
 import Navbar from "./Components/Navbar/Navbar"
 import Intro from './Components/MiddlePart/Intro'
 import Skills from './Components/MiddlePart/Skills'
