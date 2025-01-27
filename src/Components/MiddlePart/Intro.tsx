@@ -123,7 +123,7 @@ const Intro: React.FC = () => {
   };
 
   return (
-    <div className="relative z-0 inset-0 flex flex-col lg:ml-40 items-center justify-center mt-20 sm:mt-28 lg:mt-44">
+    <div className="relative z-0 inset-0 flex flex-col lg:ml-40 items-center justify-center mt-10 sm:mt-28 lg:mt-44">
       <div className="flex flex-col lg:flex-row justify-between items-center lg:items-start w-full max-w-[1200px] px-4 sm:px-8">
         <div className="lg:order-last mt-8 lg:mt-0 w-[400px] h-[400px] sm:w-[600px] sm:h-[700px] mr-3">
         <Canvas

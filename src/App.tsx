@@ -15,7 +15,7 @@ function App() {
         
          <Navbar/>
          <Navbar />
-         <section id="about" className="pt-[80px]">
+         <section id="about" className="pt-[60px]">
   <Intro />
 </section>
 <section id="skills" className="pt-[30px]">
