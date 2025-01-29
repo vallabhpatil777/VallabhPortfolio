@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import { AnimationMixer, LoopOnce, Clock } from "three";
 
+// Optimized Model component
 const Model = ({
   onClick,
   castShadow,
@@ -10,7 +11,7 @@ const Model = ({
   onClick: () => void;
   castShadow?: boolean;
 }) => {
-  const { scene, animations } = useGLTF("/model.glb");
+  const { scene, animations } = useGLTF("/model.glb", true);
   const mixer = useRef<AnimationMixer | null>(null);
   const clock = useRef<Clock | null>(null);
 
@@ -82,6 +83,7 @@ const Model = ({
   );
 };
 
+// Intro component
 const Intro: React.FC = () => {
   const [displayText, setDisplayText] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
@@ -126,58 +128,47 @@ const Intro: React.FC = () => {
     <div className="relative z-0 inset-0 flex flex-col lg:ml-35 items-center justify-center mt-10 sm:mt-28 lg:mt-44">
       <div className="flex flex-col lg:flex-row justify-between items-center lg:items-start w-full max-w-[1200px] px-4 sm:px-2">
         <div className="lg:order-last mt-8 lg:mt-0 w-[400px] h-[400px] sm:w-[600px] sm:h-[700px] mr-3">
-        <Canvas
-  shadows
-  camera={{ position: [0, 2, 10], fov: 35 }}
->
- 
-  <ambientLight intensity={1.7} />
+          <Suspense fallback={<div>Loading...</div>}>
+            <Canvas
+              shadows
+              camera={{ position: [0, 2, 10], fov: 35 }}
+            >
+              <ambientLight intensity={1.7} />
+              <spotLight
+                position={[10, 10, 10]}
+                angle={0.5} 
+                penumbra={0.5}
+                intensity={2} 
+                castShadow={true}
+                shadow-mapSize-width={1024} 
+                shadow-mapSize-height={1024}
+                shadow-bias={-0.0001}
+              />
+              <directionalLight
+                position={[5, 5, 5]} 
+                intensity={0.5}
+                castShadow
+                shadow-mapSize-width={1024}
+                shadow-mapSize-height={1024}
+              />
+              <spotLight
+                position={[0, 20, 0]} 
+                angle={0.8}
+                penumbra={0.3} 
+                intensity={2} 
+                castShadow
+                shadow-mapSize-width={1024} 
+                shadow-mapSize-height={1024}
+              />
+              <mesh position={[0.3, -2.3, 0]} receiveShadow>
+                <cylinderGeometry args={[1.1, 1.4, 0.2, 64]} />
+                <meshStandardMaterial color="#5B595E" />
+              </mesh>
 
-  
-  <spotLight
-    position={[10, 10, 10]}
-    angle={0.5} 
-    penumbra={0.5}
-    intensity={2} 
-    castShadow ={true}
-    shadow-mapSize-width={1024} 
-    shadow-mapSize-height={1024}
-    shadow-bias={-0.0001}
-
-  />
-
- 
-  <directionalLight
-    position={[5, 5, 5]} 
-    intensity={0.5}
-    castShadow
-    shadow-mapSize-width={1024}
-    shadow-mapSize-height={1024}
-  />
-
- 
-  <spotLight
-    position={[0, 20, 0]} 
-    angle={0.8}
-    penumbra={0.3} 
-    intensity={2} 
-    castShadow
-    shadow-mapSize-width={1024} 
-    shadow-mapSize-height={1024}
-  />
-
-  
-  <mesh position={[0.3, -2.3,0
-  ]} receiveShadow>
-    <cylinderGeometry args={[1.1, 1.4, 0.2, 64]} />
-    <meshStandardMaterial color="#5B595E" />
-  </mesh>
-
-  {/* 3D Model */}
-  <Model onClick={handleModelClick} castShadow />
-</Canvas>
-
-
+              {/* 3D Model */}
+              <Model onClick={handleModelClick} castShadow />
+            </Canvas>
+          </Suspense>
         </div>
         <div className="max-w-[600px] text-center lg:text-left mt-10 lg:mt-0">
           <h1 className="font-sans text-white font-semibold text-[32px] sm:text-[40px] lg:text-[50px]  leading-tight">
