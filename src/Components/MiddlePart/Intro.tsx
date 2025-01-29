@@ -123,8 +123,8 @@ const Intro: React.FC = () => {
   };
 
   return (
-    <div className="relative z-0 inset-0 flex flex-col lg:ml-40 items-center justify-center mt-10 sm:mt-28 lg:mt-44">
-      <div className="flex flex-col lg:flex-row justify-between items-center lg:items-start w-full max-w-[1200px] px-4 sm:px-8">
+    <div className="relative z-0 inset-0 flex flex-col lg:ml-35 items-center justify-center mt-10 sm:mt-28 lg:mt-44">
+      <div className="flex flex-col lg:flex-row justify-between items-center lg:items-start w-full max-w-[1200px] px-4 sm:px-2">
         <div className="lg:order-last mt-8 lg:mt-0 w-[400px] h-[400px] sm:w-[600px] sm:h-[700px] mr-3">
         <Canvas
   shadows
@@ -180,12 +180,12 @@ const Intro: React.FC = () => {
 
         </div>
         <div className="max-w-[600px] text-center lg:text-left mt-10 lg:mt-0">
-          <h1 className="font-sans text-white font-semibold text-[32px] sm:text-[40px] lg:text-[50px] leading-tight">
+          <h1 className="font-sans text-white font-semibold text-[32px] sm:text-[40px] lg:text-[50px]  leading-tight">
             Hi, I am <br />
             <span className="block">Vallabh Patil</span>
           </h1>
-          <div className="font-sans text-white font-semibold text-[16px] sm:text-[20px] lg:text-[30px] py-5 flex flex-row lg:items-center justify-center lg:justify-start">
-            <h1 className="mr-1">I am a&nbsp;</h1>
+          <div className="font-sans text-white font-semibold text-[16px] md:text-[20px] lg:text-[25px] py-5 flex flex-row  lg:items-center justify-center lg:justify-start">
+            <h1 className="mr-1 ">I am a&nbsp;</h1>
             <h1 className="text-[#8C2EDB]">{displayText}</h1>
             <span className="text-[#8C2EDB] animate-blink">|</span>
           </div>
@@ -194,7 +194,7 @@ const Intro: React.FC = () => {
           </div>
           <div className="text-[#854CE6] mt-6 lg:mt-10 text-sm sm:text-md lg:text-lg font-normal">
             <a
-              href="https://github.com/vallabhpatil777"
+              href="https://drive.google.com/file/d/1iXY-uTUDFZpiST-gsbX8aJJuaXz4J784/view?usp=share_link"
               target="_blank"
               rel="noopener noreferrer"
             >

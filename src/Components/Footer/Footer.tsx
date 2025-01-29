@@ -23,7 +23,7 @@ const Footer: React.FC = () => {
           </a>
        
         </div>
-        <div className="text-sm text-gray-400 mb-2">
+        <div className="text-sm text-gray-400 mb-4">
           © 2024 Vallabh Patil. All rights reserved.
         </div>
       </div>
