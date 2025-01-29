@@ -3,7 +3,7 @@ import { Canvas } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import { AnimationMixer, LoopOnce, Clock } from "three";
 
-// Optimized Model component
+
 const Model = ({
   onClick,
   castShadow,
