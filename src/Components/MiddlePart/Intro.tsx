@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
-import { useGLTF } from "@react-three/drei";
+import { useGLTF, Preload } from "@react-three/drei";
 import { AnimationMixer, LoopOnce, Clock } from "three";
 
+// Preload the model immediately when the component mounts
+useGLTF.preload("/model.glb");
 
 const Model = ({
   onClick,
@@ -77,18 +79,19 @@ const Model = ({
       dispose={null}
       scale={[2.6, 2.6, 2.6]}
       position={[-0.1, -2.1, 0]}
-      receiveShadow
-      castShadow={castShadow}
+      receiveShadow // Enable receiving shadows (if needed)
+      castShadow={castShadow} // Enable casting shadows
     />
   );
 };
 
-// Intro component
+// Intro Component
 const Intro: React.FC = () => {
   const [displayText, setDisplayText] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [loopIndex, setLoopIndex] = useState<number>(0);
   const [typingSpeed, setTypingSpeed] = useState<number>(150);
+  const [isModelLoaded, setIsModelLoaded] = useState<boolean>(false);
 
   const texts = [
     "Software Developer",
@@ -124,68 +127,83 @@ const Intro: React.FC = () => {
     console.log("Model clicked!");
   };
 
+  // Preload the model and set isModelLoaded to true once done
+  useEffect(() => {
+    const preloadModel = async () => {
+      await useGLTF.preload("/model.glb");
+      setIsModelLoaded(true);
+    };
+
+    preloadModel();
+  }, []);
+
   return (
-    <div className="relative z-0 inset-0 flex flex-col lg:ml-35 items-center justify-center mt-10 sm:mt-28 lg:mt-44">
+    <div className="relative z-0 inset-0 flex flex-col lg:ml-35 items-center  justify-center mt-10 sm:mt-28 lg:mt-44">
       <div className="flex flex-col lg:flex-row justify-between items-center lg:items-start w-full max-w-[1200px] px-4 sm:px-2">
         <div className="lg:order-last mt-8 lg:mt-0 w-[400px] h-[400px] sm:w-[600px] sm:h-[700px] mr-3">
-          <Suspense fallback={<div>Loading...</div>}>
-            <Canvas
-              shadows
-              camera={{ position: [0, 2, 10], fov: 35 }}
-            >
-              <ambientLight intensity={1.7} />
-              <spotLight
-                position={[10, 10, 10]}
-                angle={0.5} 
-                penumbra={0.5}
-                intensity={2} 
-                castShadow={true}
-                shadow-mapSize-width={1024} 
-                shadow-mapSize-height={1024}
-                shadow-bias={-0.0001}
-              />
-              <directionalLight
-                position={[5, 5, 5]} 
-                intensity={0.5}
-                castShadow
-                shadow-mapSize-width={1024}
-                shadow-mapSize-height={1024}
-              />
-              <spotLight
-                position={[0, 20, 0]} 
-                angle={0.8}
-                penumbra={0.3} 
-                intensity={2} 
-                castShadow
-                shadow-mapSize-width={1024} 
-                shadow-mapSize-height={1024}
-              />
-              <mesh position={[0.3, -2.3, 0]} receiveShadow>
-                <cylinderGeometry args={[1.1, 1.4, 0.2, 64]} />
-                <meshStandardMaterial color="#5B595E" />
-              </mesh>
+          {isModelLoaded ? (
+            <Suspense fallback={<div>Loading Model...</div>}>
+              <Canvas shadows camera={{ position: [0, 2, 10], fov: 35 }}>
+                <Preload all />
+                <ambientLight intensity={1.7} />
+                <spotLight
+                  position={[10, 10, 10]}
+                  angle={0.5}
+                  penumbra={0.5}
+                  intensity={2}
+                  castShadow={true}
+                  shadow-mapSize-width={1024}
+                  shadow-mapSize-height={1024}
+                  shadow-bias={-0.0001}
+                />
+                <directionalLight
+                  position={[5, 5, 5]}
+                  intensity={0.5}
+                  castShadow
+                  shadow-mapSize-width={1024}
+                  shadow-mapSize-height={1024}
+                />
+                <spotLight
+                  position={[0, 20, 0]}
+                  angle={0.8}
+                  penumbra={0.3}
+                  intensity={2}
+                  castShadow
+                  shadow-mapSize-width={1024}
+                  shadow-mapSize-height={1024}
+                />
+                {/* Pedestal */}
+                <mesh position={[0.3, -2.3, 0]} receiveShadow>
+                  <cylinderGeometry args={[1.1, 1.4, 0.2, 64]} />
+                  <meshStandardMaterial color="#5B595E" />
+                </mesh>
 
-              {/* 3D Model */}
-              <Model onClick={handleModelClick} castShadow />
-            </Canvas>
-          </Suspense>
+                {/* 3D Model */}
+                <Model onClick={handleModelClick} castShadow />
+              </Canvas>
+            </Suspense>
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#854CE6]"></div>
+            </div>
+          )}
         </div>
         <div className="max-w-[600px] text-center lg:text-left mt-10 lg:mt-0">
-          <h1 className="font-sans text-white font-semibold text-[32px] sm:text-[40px] lg:text-[50px]  leading-tight">
+          <h1 className="font-sans text-white font-semibold text-[32px] sm:text-[40px] lg:text-[50px] leading-tight">
             Hi, I am <br />
             <span className="block">Vallabh Patil</span>
           </h1>
-          <div className="font-sans text-white font-semibold text-[16px] md:text-[20px] lg:text-[25px] py-5 flex flex-row  lg:items-center justify-center lg:justify-start">
-            <h1 className="mr-1 ">I am a&nbsp;</h1>
+          <div className="font-sans text-white font-semibold text-[16px] md:text-[20px] lg:text-[25px] py-5 flex flex-row lg:items-center justify-center lg:justify-start">
+            <h1 className="mr-1">I am a&nbsp;</h1>
             <h1 className="text-[#8C2EDB]">{displayText}</h1>
             <span className="text-[#8C2EDB] animate-blink">|</span>
           </div>
           <div>
-            <span className="text-gray-500 font-sans  text-[16px]">INNOVATING TODAY FOR A SMARTER TOMORROW.</span>
+            <span className="text-gray-500 font-sans text-[16px]">INNOVATING TODAY FOR A SMARTER TOMORROW</span>
           </div>
           <div className="text-[#854CE6] mt-6 lg:mt-10 text-sm sm:text-md lg:text-lg font-normal">
             <a
-              href="https://drive.google.com/file/d/1iXY-uTUDFZpiST-gsbX8aJJuaXz4J784/view?usp=share_link"
+              href="https://drive.google.com/file/d/1DMEKxfA_2MtkR8jJK5qXlncXGxsYddTT/view?usp=share_link"
               target="_blank"
               rel="noopener noreferrer"
             >
