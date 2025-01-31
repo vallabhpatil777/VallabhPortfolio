@@ -21,7 +21,7 @@ const Experience: React.FC = () => {
       role: "Associate Software Engineer",
       duration: "January 2021 - July 2022",
       description:
-        "I work on backend solutions, focusing on change management and software releases. I develop scalable systems using Java, optimize database queries in MySQL, and collaborate with agile teams to improve performance and reliability through continuous testing and sprint planning.",
+        "As an Associate Software Engineer i worked on backend solutions, focusing on change management and handling software releases. Worked on backend development tasks using Java, optimized database queries in MySQL, and collaborated with agile teams to improve performance and reliability through continuous testing also actively participated in sprint planning and sprint reviews .",
       skills: "Java • MySQL • Git • Jira • Application Testing"
       , logo :accenture
     },
