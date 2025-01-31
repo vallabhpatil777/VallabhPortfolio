@@ -9,33 +9,35 @@ import Footer from './Components/Footer/Footer'
 
 
 function App() {
-
   return (
-      <div>
-        
-         <Navbar/>
-         <Navbar />
-         <section id="about" className="pt-[60px]">
-  <Intro />
-</section>
-<section id="skills" className="pt-[30px]">
-  <Skills />
-</section>
-<section id="experience" className="pt-[80px]">
-  <Experience />
-</section>
-<section id="projects"  className="pt-[20px]">
-  <Projects />
-</section>
-<section id="education" className="pt-[80px]">
-  <Education />
-</section>
-         <Contact/>
-         <Footer/>
-      </div>
+    <div className="overflow-x-hidden min-h-screen">
+      <Navbar />
       
-  
-  )
+    
+      <section id="about" className="w-full pt-[60px] bg-[#090917]">
+        <Intro />
+      </section>
+      <section id="skills" className="w-full  pt-[30px] bg-[#090917]">
+        <Skills />
+      </section>
+      <section id="experience" className="w-full  pt-[80px] bg-[#090917]">
+        <Experience />
+      </section>
+      <section id="projects" className="w-full pt-[20px] bg-[#090917]">
+        <Projects />
+      </section>
+      <section id="education" className="w-full  pt-[80px] bg-[#090917]">
+        <Education />
+      </section>
+      <section id="contact" className="w-full ">
+        <Contact />
+      </section>
+      <section id="footer" className="w-full ">
+      <Footer />
+      </section>
+      
+    </div>
+  );
 }
 
-export default App
+export default App;
