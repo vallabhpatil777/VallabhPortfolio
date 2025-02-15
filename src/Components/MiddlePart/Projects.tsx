@@ -5,6 +5,9 @@ import blog from '../../assets/blog.png'
 import facecmask from '../../assets/facemask1.png'
 import spam from '../../assets/spam.png'
 import portfolio from '../../assets/portfolio.png'
+import travelplan from '../../assets/travelplan.png'
+import DocumentRag from '../../assets/DocumentRag.png'
+
 
 const Projects = () => {
   const [selectedFilter, setSelectedFilter] = useState('All')
@@ -14,7 +17,7 @@ const Projects = () => {
     {
       image: social,
       topic: 'Social Media Web Application',
-      duration: '1 Month',
+      duration: '2024',
       description: 'A web application built using React, Redux, Java, MySQL and Spring Boot, enabling users to share posts, interact, and connect seamlessly. The application offers functionalities such as creating, liking, and commenting on posts, as well as secure image and video uploads using Cloudinary. It features follow/unfollow capabilities and secure JWT-based authentication for user accounts.',
       category: 'Java',
       codeLink: "https://github.com/vallabhpatil777/SocialMedia-App-Java-JavaScript-React",
@@ -23,7 +26,7 @@ const Projects = () => {
     {
       image: restro,
       topic: 'Restaurant Booking Web Application',
-      duration: '1 Month',
+      duration: '2024',
       description: "A Django-based web application built using Python, SQLite, Bootstrap and Javascript that allows users to view the restaurant menu, book tables, and provide feedback. The app is fully functional, with an intuitive interface for seamless booking and interaction. It leverages Django's robust backend features, while the frontend is styled using Bootstrap for responsiveness and ease of use. Also deployed on AWS EC2.",
       category: 'Python',
       codeLink: 'https://github.com/vallabhpatil777/Restaurant-Booking-WebApplication-Django',
@@ -32,16 +35,34 @@ const Projects = () => {
     {
       image: blog,
       topic: 'BlogHive Web Application',
-      duration: '1 Month',
+      duration: '2024',
       description: 'A Django-based blog web application built using Python, SQLite, Bootstrap and Javascript that enables users to create, edit, and delete blog posts, add comments, and manage their profiles. The app features blog post creation, deletion, add comments, user authentication (signup, login, logout) and profile editing functionality. Application is deployed on PythonAnywhere.',
       category: 'Python',
       codeLink: 'https://github.com/vallabhpatil777/Blog-WebApp-Django',
       demoLink: 'https://vallabhpatil777.pythonanywhere.com',
     },
     {
+      image: travelplan,
+      topic: 'Travel Planner AI MultiAgent Application ',
+      duration: '2025',
+      description: 'A web application built using Python, React, FastAPI, LangChain, LangGraph, Hugging Face embeddings, and Groq API, designed as an AI travel planner that generates personalized itineraries. It features a multi-agent system leveraging LangChain and LangGraph for AI-driven decision-making and state management. The frontend, built with React, TypeScript, Redux Toolkit, and Axios, interacts with a FastAPI backend that processes user input, retrieving travel recommendations based on city and interests. The system utilizes Llama-3.3-70B-Versatile via Groq API and Hugging Face embeddings to provide optimized travel plans. ',
+      category: 'AI / ML',
+      codeLink: 'https://github.com/vallabhpatil777/Travel_Planner_AI_MultiAgent',
+     
+    },
+    {
+      image: DocumentRag,
+      topic: 'Document RAG Application ',
+      duration: '2025',
+      description: 'A Document RAG (Retrieval-Augmented Generation) application developed using Python, Streamlit, LangChain, Hugging Face embeddings, and Chroma vector database for advanced document querying and summarization. The app integrates Deepseek-R1-70B, Llama-70B, and other LLM models via Groq Cloud API, enabling AI-driven responses with vector-based retrieval and query chaining. It features a session-based approach to efficiently manage document embeddings, allowing users to interactively search, compare model outputs, and extract key insights from uploaded documents.',
+      category: 'AI / ML',
+      codeLink: 'https://github.com/vallabhpatil777/Document_RAG_App',
+     
+    },
+    {
       image: facecmask,
       topic: 'Face Mask Detection Web Application ',
-      duration: '1 Month',
+      duration: '2024',
       description: 'A web application built using Flask, Python, OpenCV and Tensorflow that detects whether a person is wearing a face mask with fine-tuned VGG16 model. The model was trained on 7,000 images with data augmentation techniques for improved accuracy and generalization. The app provides real-time predictions through a simple interface, with real time detection using webcam. ',
       category: 'AI / ML',
       codeLink: 'https://github.com/vallabhpatil777/Facemask-detection-OpenCV',
@@ -50,7 +71,7 @@ const Projects = () => {
     {
       image: spam,
       topic: 'Spam Email Detection Web Application',
-      duration: '1 Month',
+      duration: '2024',
       description: 'A Machine Learning web application designed to classify emails and SMS messages as Spam or Not Spam using Natural Language Processing (NLP). Various ML models were evaluated, and Multinomial Naive Bayes with TF-IDF vectorization with (98% precision) was selected for prediction due to its accuracy and efficiency. Built with Streamlit, it provides real-time predictions.',
       category: 'AI / ML',
       codeLink: 'https://github.com/vallabhpatil777/Spam-email-predictor',
@@ -59,7 +80,7 @@ const Projects = () => {
     {
       image: portfolio,
       topic: 'Personal Portfolio',
-      duration: '1 Month',
+      duration: '2025',
       description: 'A personal portfolio web application developed using React, TypeScript, Three.js and Tailwind CSS, featuring an interactive 3D avatar rendered using Three.js. The portfolio showcases my skills, education, experience, and includes a contact form. Built with a sleek, responsive UI using Tailwind CSS, it provides an immersive, visually engaging experience that highlights my academic and professional journey.',
       category:'React',
       codeLink: 'https://github.com/vallabhpatil777/VallabhPortfolio',

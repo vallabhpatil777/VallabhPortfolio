@@ -203,7 +203,7 @@ const Intro: React.FC = () => {
           </div>
           <div className="text-[#854CE6] mt-6 lg:mt-10 text-sm sm:text-md lg:text-lg font-normal">
             <a
-              href="https://drive.google.com/file/d/1DMEKxfA_2MtkR8jJK5qXlncXGxsYddTT/view?usp=share_link"
+              href="https://drive.google.com/file/d/1zFwU5AEfwRAAWHKxuVOin-GqDFYXEKTY/view?usp=sharing"
               target="_blank"
               rel="noopener noreferrer"
             >

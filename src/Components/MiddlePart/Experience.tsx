@@ -11,8 +11,8 @@ const Experience: React.FC = () => {
       company: "Risidio, London UK",
       role: "Frontend Developer Intern",
       duration: "January 2025 - Present",
-      description:" I am a Frontend Developer Intern with a focus on front-end development, where I turn designs into responsive, scalable web applications. I work with React, Next.js, and TypeScript to build dynamic interfaces and ensure seamless user experiences. My role also allows me to contribute to backend tasks, integrating with PostgreSQL for data management and using Docker for streamlined deployment. Additionally, I have the opportunity to research AI Agents and Large Language Models (LLMs) while collaborating in agile teams", 
-      skills: "React • TypeScript • Redux • Git • Docker • NestJS • Figma • PostgreSQL • Agile Project Management",
+      description:" As a Software Developer Intern at Risidio, I am actively involved in developing AI Agents and creating a RAG utility microservice using LangChain, LLMs, and vector databases for tasks like text summarization. Additionally, I am exploring AI in the blockchain space, researching smart contracts, LLMs, and integrating AI for automated workflows within the blockchain ecosystem. On the frontend, I build responsive, reusable components using Figma, React, Redux Toolkit, TypeScript, SCSS, and Tailwind CSS, ensuring seamless user experiences and high performance.For backend and deployment, I manage data efficiently using PostgreSQL and Prisma ORM, streamline workflows with Docker, and collaborate in agile teams using Git, actively participating in daily standups and scrum meetings.", 
+      skills: "Python • React • TypeScript • LLMs • LangChain • Retrieval Augmented Generation (RAG) • FastAPI • Redux • Git • Docker • NestJS • Figma • PostgreSQL • Agile Project Management",
       logo: risidio,
     },
     {

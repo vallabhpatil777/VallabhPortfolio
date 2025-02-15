@@ -41,7 +41,7 @@ import excel from "../../assets/excel.png"
 import spyder from "../../assets/spyder.png"
 import springtool from "../../assets/springtool.jpeg"
 import jupyter from "../../assets/Jupyter_logo.svg.png"
-
+import fastapi from '../../assets/FastAPI.svg'
 
 
 
@@ -150,6 +150,7 @@ const Skills = () => {
         { name: "Flask", image: flask },
         { name: "ExpressJS", image: expressjs },
         { name: "NestJS", image: nestjs },
+        { name: "FastAPI", image: fastapi },
       ],
     },
     {
