@@ -7,6 +7,7 @@ import spam from '../../assets/spam.png'
 import portfolio from '../../assets/portfolio.png'
 import travelplan from '../../assets/travelplan.png'
 import DocumentRag from '../../assets/DocumentRag.png'
+import newstool from '../../assets/newstool.png'
 
 
 const Projects = () => {
@@ -40,6 +41,15 @@ const Projects = () => {
       category: 'Python',
       codeLink: 'https://github.com/vallabhpatil777/Blog-WebApp-Django',
       demoLink: 'https://vallabhpatil777.pythonanywhere.com',
+    },
+    {
+      image: newstool,
+      topic: 'News Research Tool AI Agent',
+      duration: '2025',
+      description: 'A web application built using Python, Langchain, Groq API, FAISS, and Streamlit, designed as an AI driven news research tool. It enables users to input article URLs, scrape the content, and process the text and provides response using Groq API and Large Language Models (LLMs). The backend handles web scraping, text processing, and vectorization using FAISS, while the frontend, built with Streamlit, provides a user-friendly interface for submitting URLs and asking questions. The system stores processed content as vectors for fast retrieval, enabling AI-driven question-answering based on the provided articles.',
+      category: 'AI / ML',
+      codeLink: 'https://github.com/vallabhpatil777/News_Research_Tool_AI_Agent',
+     
     },
     {
       image: travelplan,
