@@ -6,13 +6,13 @@ import Projects from './Components/MiddlePart/Projects'
 import Education from './Components/MiddlePart/Education'
 import Contact from './Components/MiddlePart/Contact'
 import Footer from './Components/Footer/Footer'
-
+import Chatbot from './Components/MiddlePart/Chatbot'
 
 function App() {
   return (
     <div className="overflow-x-hidden min-h-screen">
       <Navbar />
-      
+      <Chatbot />
     
       <section id="about" className="w-full pt-[60px] bg-[#090917]">
         <Intro />
