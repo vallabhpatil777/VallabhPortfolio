@@ -100,7 +100,7 @@ export default function Chatbot() {
       </button>
     </div>
 
-    <div className="p-4 flex-1 overflow-y-auto max-h-[70vh] space-y-2 bg-gray-900 rounded-b-lg">
+    <div className="p-4 flex-1 overflow-y-auto max-h-[70vh] space-y-2 bg-gray-900 ">
       {messages.map((msg, idx) => (
         <div
           key={idx}
