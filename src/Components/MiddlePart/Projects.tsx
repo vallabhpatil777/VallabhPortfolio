@@ -91,7 +91,7 @@ const Projects = () => {
       image: portfolio,
       topic: 'Personal Portfolio',
       duration: '2025',
-      description: 'A personal portfolio web application developed using React, TypeScript, Three.js and Tailwind CSS, featuring an interactive 3D avatar rendered using Three.js. The portfolio showcases my skills, education, experience, and includes a contact form. Built with a sleek, responsive UI using Tailwind CSS, it provides an immersive, visually engaging experience that highlights my academic and professional journey.',
+      description: 'A personal portfolio web application with AI-assistant developed using React, TypeScript, Three.js, Langchain and Tailwind CSS, featuring an interactive 3D avatar rendered using Three.js. The portfolio showcases my skills, education, experience, and includes a contact form. Built with a sleek, responsive UI using Tailwind CSS, it provides an immersive, visually engaging experience that highlights my academic and professional journey.',
       category:'React',
       codeLink: 'https://github.com/vallabhpatil777/VallabhPortfolio',
       demoLink : '#'

@@ -1,50 +1,25 @@
-# React + TypeScript + Vite
+# Personal Portfolio with AI Assistant
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A personal portfolio web application with an integrated AI-assistant, developed using **React**, **TypeScript**, **Three.js**, **LangChain**, and **Tailwind CSS**. This portfolio showcases my academic and professional journey, including my skills, education, and experience. The website features an interactive 3D avatar rendered using **Three.js**, providing an immersive, visually engaging experience for visitors.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **AI Assistant**: An interactive AI assistant powered by LangChain to engage with users and provide insights into my work and experience.
+- **3D Avatar**: A dynamic, interactive personal avatar rendered with Three.js that adds a fun and visually stunning touch to the portfolio.
+- **Responsive Design**: Built with Tailwind CSS to provide a responsive, mobile-friendly user interface across all devices.
+- **Showcase of Skills and Experience**: Detailed sections about my skills, education, and professional background.
+- **Contact Form**: A working contact form to reach out with inquiries or collaborations.
 
-## Expanding the ESLint configuration
+## Technologies Used
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **React**
+- **TypeScript**
+- **Three.js**
+- **LangChain**
+- **Tailwind CSS**
+- **React-Three/Fiber**
 
-- Configure the top-level `parserOptions` property like this:
+## Demo
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+You can view the live demo of the portfolio here:  
+[Portfolio Demo](https://vallabh-portfolio777.netlify.app)
