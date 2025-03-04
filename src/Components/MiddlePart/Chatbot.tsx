@@ -77,60 +77,62 @@ export default function Chatbot() {
 
   return (
     <>
-      <button
-        onClick={handleOpenChat}
-        className="fixed right-4 bottom-4 bg-gradient-to-r text-white p-4 rounded-full shadow-lg hover:opacity-80 z-50 transition-all duration-300 ease-in-out lg:p-6"
-      >
-        
-        <img 
+<button
+  onClick={handleOpenChat}
+  className="fixed right-4 bottom-4 bg-gradient-to-r text-white p-4 rounded-full shadow-lg hover:opacity-80 z-50 transition-all duration-300 ease-in-out lg:p-6"
+>
+  <img 
     src={chat} 
     alt="Chat Icon"
-    className="w-12 h-12" 
+    className="w-12 h-12"
   />
+</button>
+
+{isOpen && (
+  <div className="fixed right-4 bottom-20 max-w-min sm:w-full max-h-[90vh] bg-gradient-to-r from-[#854CE6] to-[#6D39B0] border border-gray-800 shadow-xl rounded-lg flex flex-col overflow-hidden z-50 transition-all duration-300 ease-in-out">
+    <div className="bg-gradient-to-r from-[#854CE6] to-[#6D39B0] text-white px-4 py-2 text-lg font-semibold flex justify-between items-center rounded-t-lg">
+      Chat with Me
+      <button
+        onClick={() => setIsOpen(false)}
+        className="text-white text-xl hover:text-gray-200 transition-all duration-300"
+      >
+        ✖
       </button>
+    </div>
 
-      {isOpen && (
-        <div className="fixed right-4 bottom-20 w-80 bg-gradient-to-r from-[#854CE6] to-[#6D39B0] border border-gray-800 shadow-xl rounded-lg flex flex-col overflow-hidden z-50 transition-all duration-300 ease-in-out">
-          <div className="bg-gradient-to-r from-[#854CE6] to-[#6D39B0] text-white px-4 py-2 text-lg font-semibold flex justify-between items-center rounded-t-lg">
-            Chat with Me
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-white text-xl hover:text-gray-200 transition-all duration-300"
-            >
-              ✖
-            </button>
-          </div>
-
-          <div className="p-4 flex-1 overflow-y-auto max-h-96 space-y-2 bg-gray-900 rounded-b-lg">
-            {messages.map((msg, idx) => (
-              <div
-                key={idx}
-                className={`p-2 rounded-lg shadow-sm ${
-                  msg.role === "user" ? "bg-white text-right" : "bg-[#854CE6] text-left"
-                } transition-all duration-300 ease-in-out`}
-              >
-                {msg.content}
-              </div>
-            ))}
-          </div>
-
-          <div className="p-2 border-t flex bg-gray-800">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Type your message..."
-              className="flex-1 border rounded-l-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#854CE6] bg-gray-700 text-white transition-all duration-300 ease-in-out"
-            />
-            <button
-              onClick={handleSend}
-              className="bg-gradient-to-r from-[#854CE6] to-[#6D39B0] text-white px-4 py-2 rounded-r-lg hover:opacity-80 transition-all duration-300 ease-in-out"
-            >
-              ➤
-            </button>
-          </div>
+    <div className="p-4 flex-1 overflow-y-auto max-h-[70vh] space-y-2 bg-gray-900 rounded-b-lg">
+      {messages.map((msg, idx) => (
+        <div
+          key={idx}
+          className={`p-2 rounded-lg shadow-sm ${
+            msg.role === "user" ? "bg-white text-right" : "bg-[#854CE6] text-left"
+          } transition-all duration-300 ease-in-out`}
+        >
+          {msg.content}
         </div>
-      )}
+      ))}
+    </div>
+
+    <div className="p-2 border-t flex bg-gray-800 items-center space-x-2">
+      <input
+        type="text"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="Type your message..."
+        className="flex-1 border rounded-l-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#854CE6] bg-gray-700 text-white transition-all duration-300 ease-in-out"
+      />
+      <button
+        onClick={handleSend}
+        className="bg-gradient-to-r from-[#854CE6] to-[#6D39B0] text-white px-4 py-2 rounded-r-lg hover:opacity-80 transition-all duration-300 ease-in-out"
+      >
+        ➤
+      </button>
+    </div>
+  </div>
+)}
+
+
+
     </>
   );
 }
