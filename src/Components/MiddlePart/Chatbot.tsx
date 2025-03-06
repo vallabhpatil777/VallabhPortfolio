@@ -3,8 +3,6 @@ import { groqChatModel } from "../lib/groqClient";
 import chat from '../../assets/chatbot.svg';
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 import { styled } from '@mui/material/styles';
-import { purple } from "@mui/material/colors";
-import { colors } from "@mui/material";
 
 
 export default function Chatbot() {
