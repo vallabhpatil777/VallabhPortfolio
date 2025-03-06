@@ -3,13 +3,15 @@ import { groqChatModel } from "../lib/groqClient";
 import chat from '../../assets/chatbot.svg';
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 import { styled } from '@mui/material/styles';
-
+import MarkdownIt from "markdown-it";
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
   const [input, setInput] = useState("");
-  const [tooltipOpen, setTooltipOpen] = useState(true); // Add state to control tooltip visibility
+  const [tooltipOpen, setTooltipOpen] = useState(true); 
+  const mdParser = new MarkdownIt();
+
   const handleSend = async () => {
     if (!input.trim()) return;
 
@@ -92,7 +94,7 @@ export default function Chatbot() {
         {
           name: 'offset',
           options: {
-            offset: [10, -20], // Adjust the second value to change the vertical distance
+            offset: [10, -20], 
           },
         },
         
@@ -157,8 +159,8 @@ export default function Chatbot() {
             msg.role === "user" ? "bg-white text-right" : "bg-[#854CE6] text-left"
           } transition-all duration-300 ease-in-out`}
         >
-          {msg.content}
-        </div>
+          <div dangerouslySetInnerHTML={{ __html: mdParser.render(msg.content) }} />
+          </div>
       ))}
     </div>
 
