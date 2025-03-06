@@ -79,13 +79,12 @@ const Model = ({
       dispose={null}
       scale={[2.6, 2.6, 2.6]}
       position={[-0.1, -2.1, 0]}
-      receiveShadow // Enable receiving shadows (if needed)
-      castShadow={castShadow} // Enable casting shadows
+      receiveShadow 
+      castShadow={castShadow} 
     />
   );
 };
 
-// Intro Component
 const Intro: React.FC = () => {
   const [displayText, setDisplayText] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
@@ -127,7 +126,6 @@ const Intro: React.FC = () => {
     console.log("Model clicked!");
   };
 
-  // Preload the model and set isModelLoaded to true once done
   useEffect(() => {
     const preloadModel = async () => {
       await useGLTF.preload("/model.glb");

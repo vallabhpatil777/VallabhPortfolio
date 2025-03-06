@@ -1,12 +1,17 @@
 import { useState } from "react";
 import { groqChatModel } from "../lib/groqClient";
 import chat from '../../assets/chatbot.svg';
+import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
+import { styled } from '@mui/material/styles';
+import { purple } from "@mui/material/colors";
+import { colors } from "@mui/material";
+
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
   const [input, setInput] = useState("");
-
+  const [tooltipOpen, setTooltipOpen] = useState(true); // Add state to control tooltip visibility
   const handleSend = async () => {
     if (!input.trim()) return;
 
@@ -46,9 +51,11 @@ export default function Chatbot() {
             - Document RAG App: Built a document retrieval and summarization app using Deepseek LLM and LangChain, optimized for fast querying and handling multiple user requests.
             - Blockchain Assistant: Designed a blockchain assistant with Groq API to manage blockchain-based rights and contracts.
             
-            Right to work in UK : Yes, I have the right to work in the UK.
+            Right to work in UK : Yes, I have the right to work in the UK. And flexible to relocate anywhere across UK.
             Languages : English, Hindi, Marathi
             Hobbies : Travelling, Gaming and Painting
+
+            Professional experience : 2 years
             
   Please respond to user inquiries by providing relevant information from the above sections only. Do not answer queries unrelated to Vallabh's skills, experience, or projects.
           `
@@ -79,11 +86,44 @@ export default function Chatbot() {
     }
   };
 
+  const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
+    <Tooltip {...props} classes={{ popper: className }} PopperProps={{
+      disablePortal: true,
+
+      modifiers: [
+        {
+          name: 'offset',
+          options: {
+            offset: [10, -20], // Adjust the second value to change the vertical distance
+          },
+        },
+        
+      ],
+    }}
+  />
+  ))(({ theme }) => ({
+    [`& .${tooltipClasses.tooltip}`]: {
+      backgroundColor: '#8146DE',
+      color: "#F7F7F7",
+      maxWidth: 500,
+      fontSize: theme.typography.pxToRem(15),
+      borderRadius: '8px',
+      zindex: 50,
+      fontFamily: 'Poppins',
+      border: '1px solid #854CE6',
+    }, [`& .${tooltipClasses.arrow}`]: {
+      color: "#854CE6",
+    
+    },
+  }));
   return (
     <>
+  <div className="fixed w-[500px] h-[100px] z-50">
+  <HtmlTooltip title="How may I help you?" arrow placement="left-start" open={tooltipOpen} onClose={() => setTooltipOpen(false)}  
+    >
 <button
   onClick={handleOpenChat}
-  className="fixed right-4 bottom-4 bg-gradient-to-r text-white p-4 rounded-full shadow-lg hover:opacity-80 z-50 transition-all duration-300 ease-in-out lg:p-6"
+  className="fixed right-4 bottom-4 bg-gradient-to-r text-white p-4 rounded-full hover:opacity-80 z-50 transition-all duration-300 ease-in-out lg:p-6"
 >
   <img 
     src={chat} 
@@ -91,7 +131,8 @@ export default function Chatbot() {
     className="w-12 h-12"
   />
 </button>
-
+</HtmlTooltip>
+</div>
 {isOpen && (
   <div className="fixed right-4 bottom-20 max-w-min sm:w-full max-h-[90vh] bg-gradient-to-r from-[#854CE6] to-[#6D39B0] border border-gray-800 shadow-xl rounded-lg flex flex-col overflow-hidden z-50 transition-all duration-300 ease-in-out">
     <div className="bg-gradient-to-r from-[#854CE6] to-[#6D39B0] text-white px-4 py-2 text-lg font-semibold flex justify-between items-center rounded-t-lg">
