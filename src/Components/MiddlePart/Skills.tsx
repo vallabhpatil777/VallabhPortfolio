@@ -42,8 +42,10 @@ import spyder from "../../assets/spyder.png"
 import springtool from "../../assets/springtool.jpeg"
 import jupyter from "../../assets/Jupyter_logo.svg.png"
 import fastapi from '../../assets/FastAPI.svg'
-
-
+import cursor from '../../assets/cursor.svg'
+import weaviate from '../../assets/weaviate.png'
+import chroma from '../../assets/chroma.webp'
+import langchain from '../../assets/Langchain--Streamline-Simple-Icons.svg'
 
 
 
@@ -168,6 +170,7 @@ const Skills = () => {
       skills: [
         { name: "TensorFlow", image: tensorflow},
         { name: "Computer Vision", image: cv },
+        { name: "LangChain", image: langchain },
         { name: "NLP", image: nlp },
         { name: "ML Algorithms", image: ml},
         { name: "Scikit-learn", image:scikit },
@@ -175,6 +178,7 @@ const Skills = () => {
         { name: "Deep Neural Network (DNN)", image: dnn},
         { name: "Data Visualization", image: datavis },
         { name: "Data Preprocessing", image: datapre },
+
 
 
       ],
@@ -186,11 +190,14 @@ const Skills = () => {
         { name: "Oracle Database", image: oracle },
         { name: "PostgreSQL", image: postgres },
         { name: "MongoDB", image: mongodb },
+        { name: "Weaviate", image: weaviate },
+        { name: "Chroma", image: chroma },
       ],
     },
     {
       title: "Tools & Techonologies",
       skills: [
+        { name: "Cursor", image: cursor},
         { name: "VS Code", image: vscode},
         { name: "Postman", image: postman },
         { name: "SpringToolSuite", image: springtool },

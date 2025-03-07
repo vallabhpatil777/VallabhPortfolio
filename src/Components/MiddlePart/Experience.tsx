@@ -9,10 +9,10 @@ const Experience: React.FC = () => {
     {
       id: 1,
       company: "Risidio, London UK",
-      role: "Software Developer Intern",
+      role: "Software Developer",
       duration: "January 2025 - Present",
-      description:" As a Software Developer Intern at Risidio, I am actively involved in developing AI Agents and creating a RAG utility microservice using LangChain, LLMs, and Weaviate (vector database) for tasks like text summarization and analysis. Additionally, I am exploring AI in the blockchain space, researching smart contracts, LLMs, and integrating AI for automated workflows within the blockchain ecosystem. On the frontend, I build responsive, reusable components using Figma, React, Redux Toolkit, TypeScript, SCSS, and Tailwind CSS, ensuring seamless user experiences and high performance.For backend and deployment, I manage data efficiently using PostgreSQL and Prisma ORM, streamline workflows with Docker, and collaborate in agile teams using Git, actively participating in daily standups and scrum meetings.", 
-      skills: "Python • React • TypeScript • LLMs • LangChain • Retrieval Augmented Generation (RAG) •  Vector Database • FastAPI • Redux • Git • Docker • NestJS • Figma • PostgreSQL • Agile Project Management",
+      description:" As a Software Developer at Risidio, I am actively involved in developing AI Agents and creating a RAG utility microservice using LangChain, LLMs, and Weaviate (vector database) for tasks like text summarization and analysis. Additionally, I am exploring AI in the blockchain space, researching smart contracts, LLMs, and integrating AI for automated workflows within the blockchain ecosystem. On the frontend, I build responsive, reusable components using Figma, React, Redux Toolkit, TypeScript, SCSS, and Tailwind CSS, ensuring seamless user experiences and high performance.For backend and deployment, I manage data efficiently using PostgreSQL and Prisma ORM, streamline workflows with Docker, and collaborate in agile teams using Git, actively participating in daily standups and scrum meetings.", 
+      skills: "Python • React • TypeScript • LLMs • LangChain • Cursor • Retrieval Augmented Generation (RAG) •  Vector Database • FastAPI • Redux • Git • Docker • NestJS • Figma • PostgreSQL • Agile Project Management",
       logo: risidio,
     },
     {
@@ -21,8 +21,8 @@ const Experience: React.FC = () => {
       role: "Associate Software Engineer",
       duration: "January 2021 - July 2022",
       description:
-        "As an Associate Software Engineer i worked on backend solutions, focusing on change management and handling software releases. Worked on backend development tasks using Java, optimized database queries in MySQL, and collaborated with agile teams to improve performance and reliability through continuous testing also actively participated in sprint planning and sprint reviews .",
-      skills: "Java • MySQL • Git • Jira • Application Testing"
+        "As an Associate Software Engineer i worked on backend solutions, focusing on change management and handling software releases. Worked on backend development tasks using Python, optimized database queries in MySQL, and collaborated with agile teams to improve performance and reliability through continuous testing also actively participated in sprint planning and sprint reviews .",
+      skills: "Python • MySQL • Git • Jira • Application Testing"
       , logo :accenture
     },
   ];

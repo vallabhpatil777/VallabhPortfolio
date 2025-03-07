@@ -94,8 +94,8 @@ const Intro: React.FC = () => {
 
   const texts = [
     "Full Stack Developer",
-    "Software Developer Intern",
-    "AI & Cloud Enthusiast",
+    "AI & ML Engineer",
+    "Cloud Enthusiast",
   ];
 
   useEffect(() => {
