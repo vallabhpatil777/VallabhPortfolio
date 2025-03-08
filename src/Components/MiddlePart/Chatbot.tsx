@@ -122,14 +122,14 @@ export default function Chatbot() {
   };
   return (
     <>
-  <div className="fixed w-[500px] h-[100px] z-50">
+  <div className="fixed w-[500px] h-[100px] z-10">
   <HtmlTooltip title="How may I help you?" arrow placement="left-start" open={tooltipOpen} onClose={handleTooltipClose}  
     >
 <button
   onClick={() => {
     handleOpenChat();
     handleTooltipClose();} }
-  className="fixed right-4 bottom-4 bg-gradient-to-r text-white p-4 rounded-full hover:opacity-80 z-50 transition-all duration-300 ease-in-out lg:p-6"
+  className="fixed right-4 bottom-4 bg-gradient-to-r text-white p-4 rounded-full hover:opacity-80 z-10 transition-all duration-300 ease-in-out lg:p-6"
 >
   <img 
     src={chat} 

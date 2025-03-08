@@ -3,7 +3,6 @@ import { Canvas } from "@react-three/fiber";
 import { useGLTF, Preload } from "@react-three/drei";
 import { AnimationMixer, LoopOnce, Clock } from "three";
 
-// Preload the model immediately when the component mounts
 useGLTF.preload("/model.glb");
 
 const Model = ({
@@ -170,13 +169,11 @@ const Intro: React.FC = () => {
                   shadow-mapSize-width={1024}
                   shadow-mapSize-height={1024}
                 />
-                {/* Pedestal */}
                 <mesh position={[0.3, -2.3, 0]} receiveShadow>
                   <cylinderGeometry args={[1.1, 1.4, 0.2, 64]} />
                   <meshStandardMaterial color="#5B595E" />
                 </mesh>
 
-                {/* 3D Model */}
                 <Model onClick={handleModelClick} castShadow />
               </Canvas>
             </Suspense>
