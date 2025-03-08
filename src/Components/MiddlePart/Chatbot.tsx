@@ -44,7 +44,7 @@ export default function Chatbot() {
           - Tools & Technologies: Blockchain Fundamentals, VS Code, Postman, SpringToolSuite, PyCharm, GoogleColab, JupyterNotebook.
   
             Professional Experience:
-            - Full Stack Software Developer Intern at Risidio (2025–Present): Focused on AI-driven applications, integrated LLM models, optimized backend systems with FastAPI, and worked on blockchain smart contract automation.
+            - Software Developer at Risidio (2025–Present): Focused on AI-driven applications, using python, RAG microservice, AI automation using tool-calling, langchain, integrated LLM models, optimized backend systems with FastAPI, and worked on blockchain smart contract automation.
             - Associate Software Engineer at Accenture (Jan 2021- July 2022):As an Associate Software Engineer i worked on backend solutions, focusing on change management and handling software releases. Worked on backend development tasks using Java, optimized database queries in MySQL, and collaborated with agile teams to improve performance and reliability through continuous testing also actively participated in sprint planning and sprint reviews .
             Projects:
             - FilmFusion AI Agents: Developing AI agents to automate workflows, RAG microservice for script document analysis in film production using blockchain technology. This includes tasks like script summarization, talent matching, and contract automation. Using python, langchain, vector database(weaviate), prompt engineering, LLMs, docker and GIT.
