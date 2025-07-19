@@ -10,7 +10,7 @@ const Experience: React.FC = () => {
       id: 1,
       company: "Risidio, London UK",
       role: "AI Backend Service Engineer",
-      duration: "January 2025 - Present",
+      duration: "January 2025 - May 2025",
       description:" As an AI Engineer at Risidio, I am actively involved in developing AI Agents and creating a RAG utility microservice using LangChain, LLMs, and Weaviate (vector database) for tasks like text summarization and analysis. Additionally, I am exploring AI in the blockchain space, researching smart contracts, LLMs, and integrating AI for automated workflows within the blockchain ecosystem. On the frontend, I build responsive, reusable components using Figma, React, Redux Toolkit, TypeScript, SCSS, and Tailwind CSS, ensuring seamless user experiences and high performance.For backend and deployment, I manage data efficiently using PostgreSQL and Prisma ORM, streamline workflows with Docker, and collaborate in agile teams using Git, actively participating in daily standups and scrum meetings.", 
       skills: "Python • React • TypeScript • LLMs • LangChain • Cursor • Retrieval Augmented Generation (RAG) •  Vector Database • FastAPI • Redux • Git • Docker • NestJS • Figma • PostgreSQL • Agile Project Management",
       logo: risidio,
