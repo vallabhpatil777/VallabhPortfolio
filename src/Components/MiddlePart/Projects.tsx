@@ -8,13 +8,22 @@ import portfolio from '../../assets/portfolio.png'
 import travelplan from '../../assets/travelplan.png'
 import DocumentRag from '../../assets/DocumentRag.png'
 import newstool from '../../assets/newstool.png'
-
+import arch from '../../assets/arch.png'
 
 const Projects = () => {
   const [selectedFilter, setSelectedFilter] = useState('All')
   const [expandedDescriptions, setExpandedDescriptions] = useState<Record<number, boolean>>({});
 
   const projectData = [
+    {
+      image: arch,
+      topic: 'Log Classification System Using Hybrid Classification ',
+      duration: '2025',
+      description: 'This project implements a hybrid log classification system, combining three complementary approaches to handle varying levels of complexity in log patterns. The classification methods ensure flexibility and effectiveness in processing predictable, complex, and poorly-labeled data patterns.',
+      category: 'AI / ML',
+      codeLink: 'https://github.com/vallabhpatil777/Log_Classification_System_Using_Hybrid_Classification.git',
+     
+    },
     {
       image: social,
       topic: 'Social Media Web Application',
