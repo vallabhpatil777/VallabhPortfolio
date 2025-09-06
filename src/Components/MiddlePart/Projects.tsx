@@ -9,6 +9,7 @@ import travelplan from '../../assets/travelplan.png'
 import DocumentRag from '../../assets/DocumentRag.png'
 import newstool from '../../assets/newstool.png'
 import arch from '../../assets/arch.png'
+import pharm from '../../assets/pharmacy.webp'
 
 const Projects = () => {
   const [selectedFilter, setSelectedFilter] = useState('All')
@@ -24,6 +25,15 @@ const Projects = () => {
       codeLink: 'https://github.com/vallabhpatil777/Log_Classification_System_Using_Hybrid_Classification.git',
      
     },
+    {
+      image: pharm,
+      topic: 'Pharmacy Assistant Voice Agent',
+      duration: '2025',
+      description: 'This project is a voice-enabled AI assistant designed for pharmacies. It can interact with users via natural voice commands to book an order, fetch order details, provide medicine information, and offer insights on availability, usage, and cost. The system integrates speech-to-text, telephony, and AI-driven tool-calling to ensure a seamless pharmacy assistance experience.',
+      category: 'AI / ML',
+      codeLink: 'https://github.com/vallabhpatil777/Pharmacy-Assistant-Voice-Agent.git',
+    }
+,    
     {
       image: social,
       topic: 'Social Media Web Application',
