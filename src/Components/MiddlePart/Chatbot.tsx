@@ -39,14 +39,15 @@ export default function Chatbot() {
           - Frontend: React, Redux Toolkit, JavaScript, TypeScript, TailwindCSS, Bootstrap, HTML5, ThreeJS, Streamlit.
           - Backend: Python, Django, Flask, NodeJS, ExpressJS, NestJS, RestAPI Development, FastAPI.
           - Cloud & DevOps: AWS Fundamentals, Docker, GitHub, Jira, Jenkins.
-          - AI / ML and Data Analysis: AI Agents, LLMs, LangChain, RAG, Prompt Engineering, LangGraph, TensorFlow, ComputerVision, NLP, ML Algorithms, Deep Neural Networks, Data Visualization, Data Preprocessing, PyTorch.
-          - Databases: MySQL, PostgreSQL, MongoDB, Oracle Database, Vector Database (Weaviate/Chroma/Pinecone).
+          - AI / ML and Data Analysis: AI Agents, LLMs, LangChain,LangGraph, LlamaIndex, GraphRAG, RAG, Prompt Engineering, LangGraph, TensorFlow, ComputerVision, NLP, ML Algorithms, Deep Neural Networks, Data Visualization, Data Preprocessing, PyTorch.
+          - Databases: MySQL, PostgreSQL, MongoDB, Oracle Database, Vector Database (Qdrant/Weaviate/Chroma/Pinecone).
           - Tools & Technologies: Blockchain Fundamentals, VS Code, Postman, SpringToolSuite, PyCharm, GoogleColab, JupyterNotebook.
   
             Professional Experience:
-            - Software Developer at Risidio (2025–Present): Focused on AI-driven applications, using python, RAG microservice, AI automation using tool-calling, langchain, integrated LLM models, optimized backend systems with FastAPI, and worked on blockchain smart contract automation.
+            - Software Developer at Risidio (Jan 2025–May 2025): Focused on AI-driven applications, using python, RAG microservice, AI automation using tool-calling, langchain, integrated LLM models, optimized backend systems with FastAPI, and worked on blockchain smart contract automation.
             - Associate Software Engineer at Accenture (Jan 2021- July 2022):As an Associate Software Engineer i worked on backend solutions, focusing on change management and handling software releases. Worked on backend development tasks using Java, optimized database queries in MySQL, and collaborated with agile teams to improve performance and reliability through continuous testing also actively participated in sprint planning and sprint reviews .
             Projects:
+            - Code Generator Assistant: Built an AI-powered coding assistant using LangGraph that works like a virtual development team. It transforms natural language prompts into complete, working projects — file by file — following real developer workflows. Features include Planner, Architect, and Coder Agents that analyze requests, generate structured plans, break them into engineering tasks, and implement code with iterative refinement. Tech stack includes LangGraph, LangChain tools, Groq LLMs, and Python. The system automates project generation and mimics real-world developer workflows to bridge AI planning with coding execution.
             - FilmFusion AI Agents: Developing AI agents to automate workflows, RAG microservice for script document analysis in film production using blockchain technology. This includes tasks like script summarization, talent matching, and contract automation. Using python, langchain, vector database(weaviate), prompt engineering, LLMs, docker and GIT.
             - Document RAG App: Built a document retrieval and summarization app using Deepseek LLM and LangChain, optimized for fast querying and handling multiple user requests.
             - Blockchain Assistant: Designed a blockchain assistant with Groq API to manage blockchain-based rights and contracts.
