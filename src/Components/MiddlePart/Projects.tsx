@@ -10,7 +10,7 @@ import DocumentRag from '../../assets/DocumentRag.png'
 import newstool from '../../assets/newstool.png'
 import arch from '../../assets/arch.png'
 import pharm from '../../assets/pharmacy.webp'
-
+import codeassist from '../../assets/codeassist.webp'
 const Projects = () => {
   const [selectedFilter, setSelectedFilter] = useState('All')
   const [expandedDescriptions, setExpandedDescriptions] = useState<Record<number, boolean>>({});
@@ -25,6 +25,15 @@ const Projects = () => {
       codeLink: 'https://github.com/vallabhpatil777/Log_Classification_System_Using_Hybrid_Classification.git',
      
     },
+    {
+      image: codeassist,
+      topic: 'Code Generator Assistant – AI-Powered Multi-Agent Coding Assistant',
+      duration: '2025',
+      description: 'Built an AI-powered coding assistant using LangGraph that works like a virtual development team. It transforms natural language prompts into complete, working projects — file by file — following real developer workflows. Features include Planner, Architect, and Coder Agents that analyze requests, generate structured plans, break them into engineering tasks, and implement code with iterative refinement. Tech stack includes LangGraph, LangChain tools, Groq LLMs, and Python. The system automates project generation and mimics real-world developer workflows to bridge AI planning with coding execution.',
+      category: 'AI / ML',
+      codeLink: 'https://github.com/vallabhpatil777/Code-Generator-Assistant-Using-LangGraph.git',
+    },
+    
     {
       image: pharm,
       topic: 'Pharmacy Assistant Voice Agent',
