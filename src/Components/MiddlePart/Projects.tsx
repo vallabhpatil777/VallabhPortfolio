@@ -11,11 +11,23 @@ import newstool from '../../assets/newstool.png'
 import arch from '../../assets/arch.png'
 import pharm from '../../assets/pharmacy.webp'
 import codeassist from '../../assets/codeassist.webp'
+import mockmate from '../../assets/mockmate.png'
 const Projects = () => {
   const [selectedFilter, setSelectedFilter] = useState('All')
   const [expandedDescriptions, setExpandedDescriptions] = useState<Record<number, boolean>>({});
 
   const projectData = [
+
+    {
+      image: mockmate,
+      topic: 'MockMate - AI-Powered Mock Interview Platform',
+      duration: '2025',
+      description: 'MockMate helps candidates prepare for job interviews by simulating AI-driven mock interviews and generating structured feedback. It provides authentication, instant feedback scoring, and interview history tracking. Built with Next.js, Firebase, TailwindCSS, and LLM-based AI feedback.',
+      category: 'AI / ML, Full Stack',
+      codeLink: 'https://github.com/vallabhpatil777/MockMate.git',
+      demoLink: 'https://mock-mate-iota-taupe.vercel.app/'
+    }
+,    
     {
       image: arch,
       topic: 'Log Classification System Using Hybrid Classification ',
