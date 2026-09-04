@@ -1,0 +1,7 @@
+# Build command and publish directory are deliberately left to the Netlify UI
+# settings that already work for this site — declaring them here would override
+# them. This file only registers the assistant function.
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"

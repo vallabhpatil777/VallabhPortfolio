@@ -1,14 +1,32 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import MarkdownIt from 'markdown-it'
 import chatIcon from '../../assets/chatbot.svg'
-import { MissingApiKeyError, sendChat, type ChatMessage } from '../lib/groqClient'
-import { ASSISTANT_SYSTEM_PROMPT } from '../../data/assistantPrompt'
+import {
+  AuthError,
+  MissingApiKeyError,
+  RateLimitError,
+  sendChat,
+  type ChatMessage,
+} from '../lib/groqClient'
 
 const GREETING = "Hello! I'm Vallabh's assistant — ask me about his experience, skills or projects."
 
 type Bubble = { id: number; role: 'user' | 'assistant'; content: string }
 
 let nextId = 0
+
+function errorMessageFor(caught: unknown): string {
+  if (caught instanceof MissingApiKeyError) {
+    return 'The assistant is not configured on this deployment. Please use the contact form instead.'
+  }
+  if (caught instanceof AuthError) {
+    return 'The assistant API key is no longer valid. Please use the contact form instead.'
+  }
+  if (caught instanceof RateLimitError) {
+    return 'The assistant is busy right now — please wait a moment and try again.'
+  }
+  return 'Sorry — I could not reach the assistant. Please try again in a moment.'
+}
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false)
@@ -17,6 +35,7 @@ export default function Chatbot() {
   const [input, setInput] = useState('')
   const [isSending, setIsSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [keyboardInset, setKeyboardInset] = useState(0)
 
   const listRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -45,7 +64,30 @@ export default function Chatbot() {
   useEffect(() => {
     const list = listRef.current
     if (list) list.scrollTop = list.scrollHeight
-  }, [messages, isSending])
+  }, [messages, isSending, error])
+
+  // On phones the software keyboard shrinks the *visual* viewport without
+  // shrinking the layout viewport, so a `bottom`-anchored panel ends up
+  // underneath it. `dvh` units do not help — iOS Safari keeps them at the
+  // keyboard-less height — so measure the covered strip and lift the panel by it.
+  useEffect(() => {
+    const viewport = window.visualViewport
+    if (!isOpen || !viewport) return
+
+    const sync = () => {
+      const covered = window.innerHeight - viewport.height - viewport.offsetTop
+      setKeyboardInset(Math.max(0, Math.round(covered)))
+    }
+
+    sync()
+    viewport.addEventListener('resize', sync)
+    viewport.addEventListener('scroll', sync)
+    return () => {
+      viewport.removeEventListener('resize', sync)
+      viewport.removeEventListener('scroll', sync)
+      setKeyboardInset(0)
+    }
+  }, [isOpen])
 
   const closeChat = useCallback(() => {
     setIsOpen(false)
@@ -81,7 +123,6 @@ export default function Chatbot() {
     // Capture the history *before* the state update so the request body matches
     // what the user can see.
     const history: ChatMessage[] = [
-      { role: 'system', content: ASSISTANT_SYSTEM_PROMPT },
       ...messages
         .filter((message) => message.content !== GREETING)
         .map(({ role, content }) => ({ role, content }) as ChatMessage),
@@ -103,11 +144,7 @@ export default function Chatbot() {
     } catch (caught) {
       if (controller.signal.aborted) return
       console.error('Chat request failed:', caught)
-      setError(
-        caught instanceof MissingApiKeyError
-          ? 'The assistant is not configured on this deployment. Please use the contact form instead.'
-          : 'Sorry — I could not reach the assistant. Please try again in a moment.',
-      )
+      setError(errorMessageFor(caught))
     } finally {
       if (!controller.signal.aborted) setIsSending(false)
     }
@@ -117,8 +154,15 @@ export default function Chatbot() {
     <>
       {/* Launcher. The previous version wrapped this in an invisible 500x100
           fixed div pinned to the top-left, which silently swallowed clicks on
-          whatever sat underneath it. */}
-      <div className="fixed bottom-4 right-4 z-40 flex items-center gap-3 sm:bottom-6 sm:right-6">
+          whatever sat underneath it.
+
+          Below `sm` the open panel spans the bottom of the screen, so the
+          launcher is hidden while open instead of sitting under the panel. */}
+      <div
+        className={`fixed bottom-4 right-4 z-40 items-center gap-3 sm:bottom-6 sm:right-6 sm:flex ${
+          isOpen ? 'hidden' : 'flex'
+        }`}
+      >
         {showHint && !isOpen && (
           <span className="hidden rounded-lg border border-brand-500 bg-brand-500 px-3 py-2 text-sm text-white shadow-lg sm:block">
             How may I help you?
@@ -144,17 +188,31 @@ export default function Chatbot() {
           role="dialog"
           aria-modal="false"
           aria-label="Chat with Vallabh's assistant"
-          // Sized off the viewport rather than a fixed pixel width, so it fits a
-          // 320px phone and never overflows the screen.
-          className="fixed bottom-24 right-4 z-40 flex max-h-[min(70dvh,32rem)] w-[calc(100vw-2rem)] max-w-sm flex-col overflow-hidden rounded-xl border border-hairline shadow-2xl sm:bottom-28 sm:right-6"
+          // Phone: pinned to both edges, so it fits a 320px screen with no
+          // horizontal overflow and is tall enough to be usable.
+          // `sm` and up: the original bottom-right card, unchanged.
+          // `min-h-0` is what lets the message list scroll rather than stretch
+          // the panel past its max height.
+          // The third `min()` term is what keeps the header on screen in a short
+          // landscape viewport: without it, `bottom-28` plus a 70dvh panel put
+          // the title bar above y=0 at 360px tall.
+          className="fixed inset-x-3 bottom-3 z-50 flex h-[min(78dvh,34rem)] max-h-[calc(100dvh-1.5rem)] min-h-0 flex-col overflow-hidden rounded-xl border border-hairline bg-gray-900 shadow-2xl sm:inset-x-auto sm:bottom-28 sm:right-6 sm:h-auto sm:max-h-[min(70dvh,32rem,calc(100dvh-8.5rem))] sm:w-[calc(100vw-3rem)] sm:max-w-sm"
+          style={
+            keyboardInset > 0
+              ? {
+                  bottom: keyboardInset + 12,
+                  maxHeight: `calc(100dvh - ${keyboardInset + 24}px)`,
+                }
+              : undefined
+          }
         >
-          <div className="flex items-center justify-between gap-2 bg-gradient-to-r from-brand-500 to-brand-700 px-4 py-3 text-white">
-            <h2 className="text-base font-semibold">Chat with Me</h2>
+          <div className="flex shrink-0 items-center justify-between gap-2 bg-gradient-to-r from-brand-500 to-brand-700 px-4 py-3 text-white">
+            <h2 className="truncate text-base font-semibold">Chat with Me</h2>
             <button
               type="button"
               onClick={closeChat}
               aria-label="Close chat"
-              className="grid h-8 w-8 place-items-center rounded-full text-lg transition hover:bg-white/20"
+              className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-lg transition hover:bg-white/20"
             >
               ✕
             </button>
@@ -165,7 +223,7 @@ export default function Chatbot() {
             role="log"
             aria-live="polite"
             aria-atomic="false"
-            className="flex-1 space-y-3 overflow-y-auto overscroll-contain bg-gray-900 p-4"
+            className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain bg-gray-900 p-3 sm:p-4"
           >
             {messages.map((message) =>
               message.role === 'user' ? (
@@ -178,7 +236,7 @@ export default function Chatbot() {
               ) : (
                 <div
                   key={message.id}
-                  className="prose-chat mr-auto w-fit max-w-[90%] break-words rounded-2xl rounded-bl-sm bg-brand-500 px-3 py-2 text-sm text-white"
+                  className="prose-chat mr-auto w-fit min-w-0 max-w-[90%] break-words rounded-2xl rounded-bl-sm bg-brand-500 px-3 py-2 text-sm text-white"
                   // Safe: the renderer is configured with `html: false`, so the
                   // model's output cannot inject markup.
                   dangerouslySetInnerHTML={{ __html: md.render(message.content) }}
@@ -211,11 +269,13 @@ export default function Chatbot() {
               event.preventDefault()
               void handleSend()
             }}
-            className="flex items-center gap-2 border-t border-hairline bg-gray-800 p-2"
+            className="flex shrink-0 items-center gap-2 border-t border-hairline bg-gray-800 p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]"
           >
             <label htmlFor="chat-input" className="sr-only">
               Message
             </label>
+            {/* 16px on phones: anything smaller makes iOS Safari zoom the page in
+                when the field takes focus. */}
             <input
               id="chat-input"
               ref={inputRef}
@@ -224,7 +284,7 @@ export default function Chatbot() {
               onChange={(event) => setInput(event.target.value)}
               placeholder="Type your message…"
               autoComplete="off"
-              className="min-w-0 flex-1 rounded-lg bg-gray-700 px-3 py-2 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="min-w-0 flex-1 rounded-lg bg-gray-700 px-3 py-2 text-base text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 sm:text-sm"
             />
             <button
               type="submit"
