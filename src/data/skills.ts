@@ -44,11 +44,6 @@ import cursor from '../assets/cursor.svg'
 import weaviate from '../assets/weaviate.webp'
 import chroma from '../assets/chroma.webp'
 import langchain from '../assets/Langchain--Streamline-Simple-Icons.svg'
-import pytorch from '../assets/pytorch.webp'
-import huggingface from '../assets/huggingface.webp'
-import qdrant from '../assets/qdrant.webp'
-import redis from '../assets/redis.webp'
-import prometheus from '../assets/prometheus.webp'
 import claude from '../assets/claude.webp'
 import openapi from '../assets/openapi.webp'
 
@@ -95,22 +90,14 @@ export const skillSets: SkillSet[] = [
       { name: 'GitHub', image: git },
       { name: 'Jira', image: jira },
       { name: 'Jenkins', image: jenkins },
-      { name: 'REST APIs' },
       { name: 'API Integration', image: openapi },
-      { name: 'Prometheus', image: prometheus },
     ],
   },
   {
     title: 'AI/ML and Data Analysis',
     skills: [
-      { name: 'LLMs' },
-      { name: 'RAG' },
       { name: 'Production-Grade RAG Pipelines' },
-      { name: 'Prompt Engineering' },
       { name: 'LangChain', image: langchain },
-      { name: 'LlamaIndex' },
-      { name: 'PyTorch', image: pytorch },
-      { name: 'Hugging Face', image: huggingface },
       { name: 'TensorFlow', image: tensorflow },
       { name: 'Computer Vision', image: cv },
       { name: 'NLP', image: nlp },
@@ -133,11 +120,6 @@ export const skillSets: SkillSet[] = [
       { name: 'Faithfulness & Answer Relevancy' },
       { name: 'Context Precision & Recall' },
       { name: 'Groundedness / Hallucination Checks' },
-      { name: 'Output Analysis' },
-      { name: 'Error Analysis' },
-      { name: 'Performance Metrics' },
-      { name: 'Response Quality Improvement' },
-      { name: 'Retrieval Tuning' },
     ],
   },
   {
@@ -149,8 +131,6 @@ export const skillSets: SkillSet[] = [
       { name: 'MongoDB', image: mongodb },
       { name: 'Weaviate', image: weaviate },
       { name: 'Chroma', image: chroma },
-      { name: 'Qdrant', image: qdrant },
-      { name: 'Redis', image: redis },
     ],
   },
   {

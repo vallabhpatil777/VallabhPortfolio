@@ -27,6 +27,11 @@
   }
 
   html {
+    /* The page background lives on `html`, NOT on `body`.
+       If `body` also carries a background it stops propagating to the canvas and
+       paints as body's own box instead — which draws on top of the fixed
+       `-z-10` snowfall layer and makes the snow invisible. */
+    background-color: theme('colors.ink');
     /* `clip` contains horizontal overflow without creating a scroll container,
        so `position: sticky` and scroll anchoring keep working. */
     overflow-x: clip;
@@ -38,7 +43,6 @@
     margin: 0;
     padding: 0;
     overflow-x: clip;
-    background-color: theme('colors.ink');
     color: #fff;
     font-family: theme('fontFamily.sans');
     -webkit-font-smoothing: antialiased;

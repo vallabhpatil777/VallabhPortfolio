@@ -56,9 +56,11 @@
     </noscript>
 
     <style>
-      /* Painted before the CSS bundle arrives so the page never flashes white. */
+      /* Painted before the CSS bundle arrives so the page never flashes white.
+         Deliberately only on `html` — a background on `body` would paint over the
+         fixed `-z-10` snowfall layer and hide it. */
       html { background-color: #090917; }
-      body { margin: 0; background-color: #090917; }
+      body { margin: 0; }
     </style>
   </head>
   <body>

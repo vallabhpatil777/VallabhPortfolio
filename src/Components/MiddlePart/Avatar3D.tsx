@@ -60,14 +60,25 @@ function Model({ interactive }: { interactive: boolean }) {
     const waving = actions[clips.waving]
     if (!stagger || stagger === waving) return
 
-    stagger.reset().setLoop(LoopOnce, 1).play()
+    // Ignore repeat clicks while the reaction is still playing, otherwise each
+    // click resets the clip and it never visibly completes.
+    if (stagger.isRunning()) return
+
+    // The wave has to be faded OUT for the click reaction to read. An
+    // AnimationMixer blends every running action by weight, so leaving `waving`
+    // at full weight averages the two clips together and the stagger barely
+    // moves the model — which looks like clicking does nothing at all.
+    waving?.fadeOut(0.2)
+
+    stagger.reset().setEffectiveWeight(1).setLoop(LoopOnce, 1).play()
     stagger.clampWhenFinished = true
 
     const onFinished = (event: { action: AnimationAction }) => {
       if (event.action !== stagger) return
       mixer.removeEventListener('finished', onFinished as never)
+      // Hand the model back to the idle wave.
       stagger.fadeOut(0.25)
-      waving?.reset().setLoop(LoopRepeat, Infinity).fadeIn(0.25).play()
+      waving?.reset().setEffectiveWeight(1).setLoop(LoopRepeat, Infinity).fadeIn(0.25).play()
     }
     mixer.addEventListener('finished', onFinished as never)
   }

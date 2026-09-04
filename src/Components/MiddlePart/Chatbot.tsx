@@ -124,6 +124,7 @@ export default function Chatbot() {
             How may I help you?
           </span>
         )}
+        {/* Original styling: the icon artwork alone, no coloured circle behind it. */}
         <button
           ref={toggleRef}
           type="button"
@@ -131,15 +132,9 @@ export default function Chatbot() {
           aria-expanded={isOpen}
           aria-haspopup="dialog"
           aria-label={isOpen ? 'Close chat assistant' : 'Open chat assistant'}
-          className="grid h-14 w-14 place-items-center rounded-full bg-gradient-to-r from-brand-500 to-brand-700 shadow-lg transition-transform duration-300 hover:scale-105 sm:h-16 sm:w-16"
+          className="rounded-full p-4 text-white transition-all duration-300 ease-in-out hover:opacity-80 lg:p-6"
         >
-          <img
-            src={chatIcon}
-            alt=""
-            width={32}
-            height={32}
-            className="h-8 w-8 sm:h-9 sm:w-9"
-          />
+          <img src={chatIcon} alt="" width={48} height={48} className="h-12 w-12" />
         </button>
       </div>
 

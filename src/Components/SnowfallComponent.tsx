@@ -1,53 +1,28 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
-import { usePrefersReducedMotion, useIsTouch } from '../hooks/useMediaQuery'
-import { useSaveData } from '../hooks/useSaveData'
+import { lazy, Suspense } from 'react'
 
-// Kept out of the entry chunk: the backdrop is decorative and must never delay
-// first paint of the actual content.
+// Lazily imported so the library sits in its own chunk rather than the entry
+// bundle. This is a build-time split only — the effect itself behaves exactly as
+// it did originally.
 const Snowfall = lazy(() => import('react-snowfall'))
 
 /**
  * Decorative snow layer behind the page.
  *
- * It is skipped entirely for reduced-motion users, touch devices and Data Saver
- * connections — a full-screen canvas repainting every frame is the kind of thing
- * that drains a phone battery for no informational value. When it does run, it
- * only mounts once the browser is idle, so it never competes with hydration.
+ * Two things here are load-bearing and easy to break:
+ *
+ * 1. The page background must live on `html` ONLY (see index.css). If `body`
+ *    also carries a background, it stops propagating to the page canvas and
+ *    paints as body's own box — directly over this `-z-10` layer, hiding the
+ *    snow completely.
+ * 2. `snowflakeCount={50}` with the library's default radius/speed is the
+ *    original look. Lowering the count or damping radius/speed makes the effect
+ *    read as "the snow is gone".
  */
 export default function SnowfallComponent() {
-  const prefersReducedMotion = usePrefersReducedMotion()
-  const isTouch = useIsTouch()
-  const saveData = useSaveData()
-  const [ready, setReady] = useState(false)
-
-  const enabled = !prefersReducedMotion && !isTouch && !saveData
-
-  useEffect(() => {
-    if (!enabled) {
-      setReady(false)
-      return
-    }
-
-    const idle =
-      typeof window.requestIdleCallback === 'function'
-        ? window.requestIdleCallback(() => setReady(true), { timeout: 2000 })
-        : window.setTimeout(() => setReady(true), 1200)
-
-    return () => {
-      if (typeof window.cancelIdleCallback === 'function') window.cancelIdleCallback(idle as number)
-      else window.clearTimeout(idle as number)
-    }
-  }, [enabled])
-
-  if (!enabled || !ready) return null
-
   return (
-    <div
-      aria-hidden="true"
-      className="pointer-events-none fixed inset-0 -z-10 select-none"
-    >
+    <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 select-none">
       <Suspense fallback={null}>
-        <Snowfall snowflakeCount={40} speed={[0.4, 1.2]} radius={[0.5, 1.8]} />
+        <Snowfall snowflakeCount={50} />
       </Suspense>
     </div>
   )
