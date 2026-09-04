@@ -1,23 +1,217 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  html, body {
+  :root {
+    /* Height of the fixed navbar. Sections use it for scroll offset so anchored
+       navigation never lands underneath the bar. */
+    --nav-h: 64px;
+    color-scheme: dark;
+  }
+
+  @screen sm {
+    :root {
+      --nav-h: 72px;
+    }
+  }
+
+  @screen lg {
+    :root {
+      --nav-h: 80px;
+    }
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    /* `clip` contains horizontal overflow without creating a scroll container,
+       so `position: sticky` and scroll anchoring keep working. */
+    overflow-x: clip;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
     margin: 0;
     padding: 0;
-    overflow-x: hidden; 
+    overflow-x: clip;
+    background-color: theme('colors.ink');
+    color: #fff;
+    font-family: theme('fontFamily.sans');
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    /* Fallback until the webfont lands, so text is readable during load. */
+    font-synthesis-weight: none;
   }
-  
+
+  /* Anchored sections clear the fixed navbar. */
+  section[id] {
+    scroll-margin-top: var(--nav-h);
+  }
+
+  img,
+  svg,
+  canvas {
+    display: block;
+    max-width: 100%;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Visible, consistent keyboard focus across every interactive element. */
+  :focus-visible {
+    outline: 2px solid theme('colors.brand.400');
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: theme('colors.brand.600');
+    color: #fff;
+  }
+
+  /* Scrollbars themed to the page instead of the default light chrome. */
   * {
-    box-sizing: border-box; 
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.brand.700') theme('colors.ink');
   }
-  
-  body {
-    font-family: 'Poppins', sans-serif; 
-    background-color: #090917; 
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
   }
-  
+
+  ::-webkit-scrollbar-track {
+    background: theme('colors.ink');
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: theme('colors.brand.700');
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: theme('colors.brand.500');
+  }
+
+  /* Respect the OS "reduce motion" setting for every animation on the page. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Shared page shell: centred, capped, and gutter-safe on notched phones. */
+  .container-page {
+    @apply mx-auto w-full max-w-content;
+    padding-inline: max(1rem, env(safe-area-inset-left));
+    padding-inline-end: max(1rem, env(safe-area-inset-right));
+  }
+
+  @screen sm {
+    .container-page {
+      padding-inline: max(1.5rem, env(safe-area-inset-left));
+      padding-inline-end: max(1.5rem, env(safe-area-inset-right));
+    }
+  }
+
+  .section-title {
+    @apply font-sans font-semibold text-white text-[clamp(1.75rem,5vw,3.25rem)] leading-tight;
+  }
+
+  .section-subtitle {
+    @apply mx-auto max-w-2xl font-sans font-medium text-gray-400 text-[clamp(0.9375rem,2.2vw,1.125rem)];
+  }
+
+  .surface-card {
+    @apply rounded-2xl border border-hairline bg-surface shadow-card;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full bg-gradient-to-r from-brand-500 to-brand-600 px-6 py-3
+           font-medium text-white shadow-lg transition duration-300
+           hover:from-brand-600 hover:to-brand-500 hover:shadow-card-hover
+           disabled:cursor-not-allowed disabled:opacity-60;
+  }
+}
+
+@layer components {
+  /* Markdown rendered inside a chat bubble: compact spacing, readable links. */
+  .prose-chat > :first-child {
+    margin-top: 0;
+  }
+
+  .prose-chat > :last-child {
+    margin-bottom: 0;
+  }
+
+  .prose-chat p,
+  .prose-chat ul,
+  .prose-chat ol,
+  .prose-chat pre {
+    margin-block: 0.5em;
+  }
+
+  .prose-chat ul,
+  .prose-chat ol {
+    padding-inline-start: 1.25em;
+  }
+
+  .prose-chat ul {
+    list-style: disc;
+  }
+
+  .prose-chat ol {
+    list-style: decimal;
+  }
+
+  .prose-chat strong {
+    font-weight: 600;
+  }
+
+  .prose-chat a {
+    text-decoration: underline;
+    overflow-wrap: anywhere;
+  }
+
+  .prose-chat code {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    padding: 0.1em 0.35em;
+    font-size: 0.9em;
+  }
+
+  .prose-chat pre {
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 8px;
+    padding: 0.6em 0.75em;
+    overflow-x: auto;
+  }
+
+  .prose-chat pre code {
+    background: none;
+    padding: 0;
+  }
 }

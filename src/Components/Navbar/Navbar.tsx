@@ -1,149 +1,190 @@
-import React, { useState } from "react";
-import { Link } from "react-scroll";
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
+import { useActiveSection } from '../../hooks/useActiveSection'
 
-const Navbar: React.FC = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+const NAV_LINKS = [
+  { id: 'about', label: 'About' },
+  { id: 'skills', label: 'Skills' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'projects', label: 'Projects' },
+  { id: 'education', label: 'Education' },
+  { id: 'contact', label: 'Contact' },
+] as const
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+const SECTION_IDS = NAV_LINKS.map((link) => link.id)
+const GITHUB_URL = 'https://github.com/vallabhpatil777'
+
+export default function Navbar() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
+  const panelRef = useRef<HTMLDivElement>(null)
+  const toggleRef = useRef<HTMLButtonElement>(null)
+  const menuId = useId()
+  const activeSection = useActiveSection(SECTION_IDS)
+
+  const closeMenu = useCallback(() => setIsMenuOpen(false), [])
+
+  // Solidify the bar once the page scrolls away from the hero.
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  // Resizing into the desktop layout must not leave an orphaned drawer on screen.
+  useEffect(() => {
+    if (!isMenuOpen) return
+    const mql = window.matchMedia('(min-width: 1024px)')
+    const onChange = () => mql.matches && closeMenu()
+    mql.addEventListener('change', onChange)
+    return () => mql.removeEventListener('change', onChange)
+  }, [isMenuOpen, closeMenu])
+
+  // Escape closes, outside clicks close, and the page behind stays put.
+  useEffect(() => {
+    if (!isMenuOpen) return
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      closeMenu()
+      toggleRef.current?.focus()
+    }
+
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target as Node
+      if (!panelRef.current?.contains(target) && !toggleRef.current?.contains(target)) {
+        closeMenu()
+      }
+    }
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    document.addEventListener('keydown', onKeyDown)
+    document.addEventListener('pointerdown', onPointerDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', onKeyDown)
+      document.removeEventListener('pointerdown', onPointerDown)
+    }
+  }, [isMenuOpen, closeMenu])
 
   return (
-    <nav className="bg-[#090917] top-0 left-0 fixed w-full h-[80px] shadow-md flex justify-between items-center px-4 sm:px-6 lg:px-44 z-50">
-      {/* Logo */}
-      <div className="text-white text-lg font-semibold font-sans">PORTFOLIO</div>
-
-      {/* Desktop Menu */}
-      <div className="hidden sm:flex space-x-6 lg:space-x-8">
-        <Link
-          to="about"
-          smooth={true}
-          duration={500}
-          className="text-white text-sm lg:text-md font-semibold hover:text-[#8C2EDB] transition duration-300 cursor-pointer"
-        >
-          About
-        </Link>
-        <Link
-          to="skills"
-          smooth={true}
-          duration={500}
-          className="text-white text-sm lg:text-md font-semibold hover:text-[#8C2EDB] transition duration-300 cursor-pointer"
-        >
-          Skills
-        </Link>
-        <Link
-          to="experience"
-          smooth={true}
-          duration={500}
-          className="text-white text-sm lg:text-md font-semibold hover:text-[#8C2EDB] transition duration-300 cursor-pointer"
-        >
-          Experience
-        </Link>
-        <Link
-          to="projects"
-          smooth={true}
-          duration={500}
-          className="text-white text-sm lg:text-md font-semibold hover:text-[#8C2EDB] transition duration-300 cursor-pointer"
-        >
-          Projects
-        </Link>
-        <Link
-          to="education"
-          smooth={true}
-          duration={500}
-          className="text-white text-sm lg:text-md font-semibold hover:text-[#8C2EDB] transition duration-300 cursor-pointer"
-        >
-          Education
-        </Link>
-      </div>
-
-      {/* Desktop Github Button */}
-      <div className="hidden sm:block">
+    <header
+      className={`fixed inset-x-0 top-0 z-50 h-[var(--nav-h)] transition-colors duration-300 ${
+        isScrolled || isMenuOpen
+          ? 'border-b border-hairline bg-ink/90 shadow-md backdrop-blur-md'
+          : 'bg-ink'
+      }`}
+    >
+      <nav
+        aria-label="Primary"
+        className="container-page flex h-full items-center justify-between gap-4"
+      >
         <a
-          href="https://github.com/vallabhpatil777"
+          href="#about"
+          className="shrink-0 font-sans text-base font-semibold tracking-wide text-white sm:text-lg"
+        >
+          PORTFOLIO
+        </a>
+
+        {/* Desktop navigation — shown only where six links plus a button genuinely
+            fit. The old breakpoint was `sm` (640px), which crushed them together. */}
+        <ul className="hidden items-center gap-5 lg:flex xl:gap-7">
+          {NAV_LINKS.map(({ id, label }) => (
+            <li key={id}>
+              <a
+                href={`#${id}`}
+                aria-current={activeSection === id ? 'true' : undefined}
+                className={`text-sm font-semibold transition-colors duration-300 hover:text-brand-600 xl:text-base ${
+                  activeSection === id ? 'text-brand-400' : 'text-white'
+                }`}
+              >
+                {label}
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <a
+          href={GITHUB_URL}
           target="_blank"
           rel="noopener noreferrer"
+          className="hidden shrink-0 rounded-full border border-brand-500 px-4 py-2 text-sm font-medium text-brand-500 transition duration-300 hover:bg-brand-600 hover:text-white lg:inline-flex xl:px-5"
         >
-          <button className="rounded-[20px] bg-transparent border-[1px] border-[#854CE6] py-[8px] px-[16px] lg:py-[10px] lg:px-[20px] text-sm lg:text-md text-[#854CE6] hover:bg-[#8C2EDB] hover:text-white transition duration-300">
-            Github Profile
-          </button>
+          Github Profile
         </a>
-      </div>
 
-      {/* Mobile Menu Button */}
-      <div className="sm:hidden ">
         <button
-          onClick={toggleMenu}
-          className="text-white text-3xl focus:outline-none"
+          ref={toggleRef}
+          type="button"
+          onClick={() => setIsMenuOpen((open) => !open)}
+          aria-expanded={isMenuOpen}
+          aria-controls={menuId}
+          aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          // 44px minimum, so the tap target meets touch guidelines.
+          className="-mr-2 inline-flex h-11 w-11 items-center justify-center rounded-lg text-white transition-colors hover:bg-white/10 lg:hidden"
         >
-          &#9776;
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            aria-hidden="true"
+          >
+            {isMenuOpen ? (
+              <>
+                <line x1="5" y1="5" x2="19" y2="19" />
+                <line x1="19" y1="5" x2="5" y2="19" />
+              </>
+            ) : (
+              <>
+                <line x1="3" y1="7" x2="21" y2="7" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="17" x2="21" y2="17" />
+              </>
+            )}
+          </svg>
         </button>
-      </div>
+      </nav>
 
-      {/* Mobile Dropdown Menu */}
-      {isMenuOpen && (
-        <div className="sm:hidden fixed top-20 left-0 w-full bg-[#D4D4D43B] backdrop-blur-md shadow-md rounded-b-[20px]">
-          <div className="flex flex-col items-center space-y-4 py-6">
-            <Link
-              to="about"
-              smooth={true}
-              duration={500}
-              className="text-white text-md font-semibold hover:text-[#8C2EDB] transition duration-300 cursor-pointer"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              About
-            </Link>
-            <Link
-              to="skills"
-              smooth={true}
-              duration={500}
-              className="text-white text-md font-semibold hover:text-[#8C2EDB] transition duration-300 cursor-pointer"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Skills
-            </Link>
-            <Link
-              to="experience"
-              smooth={true}
-              duration={500}
-              className="text-white text-md font-semibold hover:text-[#8C2EDB] transition duration-300 cursor-pointer"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Experience
-            </Link>
-            <Link
-              to="projects"
-              smooth={true}
-              duration={500}
-              className="text-white text-md font-semibold hover:text-[#8C2EDB] transition duration-300 cursor-pointer"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Projects
-            </Link>
-            <Link
-              to="education"
-              smooth={true}
-              duration={500}
-              className="text-white text-md font-semibold hover:text-[#8C2EDB] transition duration-300 cursor-pointer"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Education
-            </Link>
+      <div
+        id={menuId}
+        ref={panelRef}
+        hidden={!isMenuOpen}
+        className="absolute inset-x-0 top-full max-h-[calc(100dvh-var(--nav-h))] overflow-y-auto border-b border-hairline bg-ink/95 shadow-xl backdrop-blur-md lg:hidden"
+      >
+        <ul className="container-page flex flex-col py-2">
+          {NAV_LINKS.map(({ id, label }) => (
+            <li key={id}>
+              <a
+                href={`#${id}`}
+                onClick={closeMenu}
+                aria-current={activeSection === id ? 'true' : undefined}
+                className={`block rounded-lg px-2 py-3 text-base font-semibold transition-colors duration-200 hover:bg-white/5 hover:text-brand-600 ${
+                  activeSection === id ? 'text-brand-400' : 'text-white'
+                }`}
+              >
+                {label}
+              </a>
+            </li>
+          ))}
+          <li className="px-2 py-4">
             <a
-              href="https://github.com/vallabhpatil777"
+              href={GITHUB_URL}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={closeMenu}
+              className="inline-flex w-full items-center justify-center rounded-full bg-brand-600 px-4 py-3 font-medium text-white transition duration-300 hover:bg-brand-500"
             >
-              <button className="rounded-[20px] bg-[#8C2EDB] text-white border-[1px] border-[#6F10BF] py-[8px] px-[16px] hover:bg-[#854CE6] hover:text-black transition duration-300">
-                Github Profile
-              </button>
+              Github Profile
             </a>
-          </div>
-        </div>
-      )}
-    </nav>
-  );
-};
-
-export default Navbar;
+          </li>
+        </ul>
+      </div>
+    </header>
+  )
+}

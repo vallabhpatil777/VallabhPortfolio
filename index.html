@@ -2,12 +2,73 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#090917" />
+    <meta name="color-scheme" content="dark" />
+
+    <title>Vallabh Patil — Full Stack &amp; AI/ML Engineer</title>
+    <meta
+      name="description"
+      content="Portfolio of Vallabh Patil — Full Stack Developer, AI &amp; ML Engineer and Cloud enthusiast. MSc Advanced Computer Science, Cardiff University. Projects in LLMs, RAG, React and Python."
+    />
+    <meta name="author" content="Vallabh Patil" />
+    <link rel="canonical" href="https://vallabhpatil.dev/" />
+
     <link rel="icon" type="image/svg+xml" href="/vlogo.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vallabh Portfolio</title>
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Open Graph / social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Vallabh Patil — Full Stack &amp; AI/ML Engineer" />
+    <meta
+      property="og:description"
+      content="Full Stack Developer, AI &amp; ML Engineer and Cloud enthusiast. Explore my skills, experience and projects."
+    />
+    <meta property="og:image" content="/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="/og-image.jpg" />
+    <meta name="twitter:title" content="Vallabh Patil — Full Stack &amp; AI/ML Engineer" />
+    <meta
+      name="twitter:description"
+      content="Full Stack Developer, AI &amp; ML Engineer and Cloud enthusiast. Explore my skills, experience and projects."
+    />
+
+    <!--
+      Fonts: preconnect early, then load the stylesheet without blocking first paint.
+      The `print` -> `all` swap is the standard non-blocking pattern; the <noscript>
+      copy keeps it working with JS disabled.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      />
+    </noscript>
+
+    <style>
+      /* Painted before the CSS bundle arrives so the page never flashes white. */
+      html { background-color: #090917; }
+      body { margin: 0; background-color: #090917; }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <p style="color:#fff;font-family:sans-serif;padding:24px">
+        This portfolio needs JavaScript enabled. You can still reach me at
+        <a style="color:#854CE6" href="https://www.linkedin.com/in/vallabh-patil-63248b144">LinkedIn</a>.
+      </p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

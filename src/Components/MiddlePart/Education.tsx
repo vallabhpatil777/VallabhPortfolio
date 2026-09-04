@@ -1,152 +1,51 @@
-import React from 'react'
-import { motion, useAnimation } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-import cardiff from "../../assets/cardiff.png"
-import cdac from "../../assets/cdac.png"
-import skn from "../../assets/sing.jpeg"
-const Education = () => {
-  
-    const experiences = [
-        {
-          id: 1,
-          company: "Cardiff University, UK",
-          role: "MSc Advanced Computer Science",
-          duration: "September 2023 - September 2024",
-          description:
-            "Specialised in modules Penetration Testing, Malware Analysis, Developing Secure Systems and Applications, Applications of Machine Learning: Natural Language Processing, Knowledge representation and Cloud Computing. Achieved 82% in Dissertation.",
-          skills: "Distinction",
-          logo: cardiff,
-        },
-        {
-          id: 2,
-          company: "Centre for Development of Advanced Computing (CDAC), India",
-          role: "PG-Diploma in Artificial Intelligence",
-          duration: "March 2023 - August 2023",
-          description:
-            "Completed PG-diploma in AI with core subjects like Java, Python programming, Deep learning, Principles of Machine learning, Data Analysis, Mathematics in AI, Natural Language Processing, and Computer Vision as part of coursework. With an understanding of various machine learning algorithms, data science methodologies, and deep learning, this course aided in the development of expertise in the fields of machine learning and artificial intelligence.",
-          skills: "A",
-          logo: cdac,
-        },
-        {
-            id: 3,
-            company: "SKN College Of Engineering, India",
-            role: "Bachelor of Engineering in Computer Science",
-            duration: "August 2016 - May 2020",
-            description:
-              "Completed Bachelors in Computer Science with key subjects like Software Engineering, Database Management Systems, Data Structures and Algorithms, Human Computer Interaction, Internet of Things and Machine Learning.",
-            skills: "7.77 / 10 CGPA",
-            logo: skn ,
-          },
-      ];
-    
-      return (
-        <div className="relative z-0 flex flex-col items-center justify-center mt-12 mb-10 px-4">
-          {/* Heading */}
-          <div className="text-center mb-8">
-            <h1 className="font-sans text-white font-semibold text-[30px] sm:text-[52px]">
-              Education
-            </h1>
-            <h2 className="font-sans text-gray-400 font-medium text-md md:text-lg mt-5">
-            An outline of my academic qualifications and the knowledge gained throughout my academic journey.
-            </h2>
-          </div>
-    
-          {/* Timeline */}
-          <div className="relative flex flex-col w-full mt-5">
-            {/* Vertical Line */}
-            <div className="absolute left-6 lg:left-[50%]  transform -translate-x-[50%] w-[4px] bg-white h-full"></div>
-    
-            {experiences.map((exp, index) => {
-              const [ref, inView] = useInView({ threshold: 0.2 });
-              const controls = useAnimation();
-    
-              React.useEffect(() => {
-                if (inView) {
-                  controls.start("visible");
-                }
-              }, [inView, controls]);
-    
-          
-    
-              const boxVariants = {
-                hidden: { y: 100, opacity: 0 }, 
-                visible: {
-                  y: 0,
-                  opacity: 1,
-                  transition: { duration: 0.8, ease: "easeOut" },
-                },
-              };
-    
-              const logoVariants = {
-                hidden: { y: 100, opacity: 0 }, 
-                visible: {
-                  y: 0,
-                  opacity: 1,
-                  transition: { duration: 0.8, ease: "easeOut" },
-                },
-              };
-    
-              return (
-                <div
-                  key={exp.id}
-                  className={`relative flex flex-row mt-6 place-items-start ${
-                    index % 2 === 0
-                      ? "lg:flex-row-reverse lg:right-[810px]"
-                      : "lg:flex-row lg:ml-[810px]"
-                  } mb-12`}
-                >
-                 
-                  <motion.div
-                    ref={ref}
-                    variants={logoVariants}
-                    initial="hidden"
-                    animate={controls}
-                    className="relative z-10 flex justify-center items-center w-12 h-12 lg:w-20 lg:h-20 bg-gray-800 border-2 border-white rounded-full shadow-md"
-                  >
-                           <img 
-  src={exp.logo}
-  alt="Logo" 
-  className="lg:w-20 lg:h-20 w-11 h-11 rounded-full object-cover" 
-/>
-                  </motion.div>
-    
-                  {/* Box */}
-                  <motion.div
-                    ref={ref}
-                    variants={boxVariants}
-                    initial="hidden"
-                    animate={controls}
-                    className={`w-[90%] lg:w-[600px] ml-3 mr-3 mt-2 lg:mt-0 shadow-[0_4px_24px_rgba(23,92,230,0.15)] ${
-                      index % 2 === 0 ? "lg:ml-8" : "lg:mr-8"
+import SectionHeading from '../common/SectionHeading'
+import Timeline from '../common/Timeline'
+import Reveal from '../common/Reveal'
+import { education } from '../../data/education'
+import { certifications } from '../../data/certifications'
+
+export default function Education() {
+  return (
+    <div className="container-page">
+      <SectionHeading
+        title="Education"
+        subtitle="An outline of my academic qualifications and the knowledge gained throughout my academic journey."
+      />
+      <Timeline entries={education} />
+
+      {/* Certifications sit under Education rather than in their own nav section,
+          so the primary navigation stays at six items. */}
+      <div className="mx-auto mt-16 w-full max-w-5xl">
+        <h3 className="text-center font-sans text-xl font-semibold text-white sm:text-2xl">
+          Certifications &amp; Awards
+        </h3>
+
+        <ul className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
+          {certifications.map((certification, index) => (
+            <Reveal key={certification.title} delay={index * 60} as="li" className="h-full">
+              <article className="surface-card flex h-full flex-col gap-2 p-5">
+                <div className="flex items-start justify-between gap-3">
+                  <span
+                    className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-xs font-medium ${
+                      certification.isAward
+                        ? 'bg-brand-500/20 text-brand-400'
+                        : 'bg-white/5 text-gray-400'
                     }`}
                   >
-                    <div className="relative">
-                      {/* Arrow pointing to the circle */}
-                      <div
-                        className={`absolute w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent ${
-                          index % 2 === 0
-                            ? "lg:border-l-[10px] border-r-[10px] lg:border-l-gray-600 border-r-gray-600 lg:left-[600px] -left-[10px] top-[10%] transform -translate-y-[50%]"
-                            : "border-r-[10px] border-r-gray-600 lg:left-[-10px] -left-[10px] top-[10%] transform -translate-y-[50%]"
-                        }`}
-                      ></div>
-    
-                      {/* Content Box */}
-                      <div className="bg-[rgba(17,25,40,0.83)] text-white p-6 rounded-lg shadow-lg border  border-[rgba(255,255,255,0.125)]">
-                        <h3 className="font-semibold text-lg">{exp.role}</h3>
-                        <p className="text-sm text-gray-300">{exp.company}</p>
-                        <p className="text-sm text-gray-300">{exp.duration}</p>
-                        <p className="text-sm mt-2">{exp.description}</p>
-                        <p className="mt-2 text-sm font-semibold">Grade:</p>
-                        <p className="text-sm text-gray-300">{exp.skills}</p>
-                      </div>
-                    </div>
-                  </motion.div>
+                    {certification.isAward ? 'Award' : 'Certification'}
+                  </span>
+                  <span className="shrink-0 text-xs text-gray-400">{certification.date}</span>
                 </div>
-              );
-            })}
-          </div>
-        </div>
+
+                <h4 className="text-sm font-semibold leading-snug text-white sm:text-base">
+                  {certification.title}
+                </h4>
+                <p className="text-sm text-gray-400">{certification.issuer}</p>
+              </article>
+            </Reveal>
+          ))}
+        </ul>
+      </div>
+    </div>
   )
 }
-
-export default Education;

@@ -1,34 +1,41 @@
-import React from 'react';
-import fbIcon from '../../assets/fbicon.svg';
-import instaIcon from '../../assets/instagram.svg';
-import linkedIcon from '../../assets/linkedinIcon.svg';
+import fbIcon from '../../assets/fbicon.svg'
+import instaIcon from '../../assets/instagram.svg'
+import linkedIcon from '../../assets/linkedinIcon.svg'
 
-const Footer: React.FC = () => {
+const SOCIALS = [
+  { href: 'https://www.facebook.com/vallabh.patil.92', icon: fbIcon, label: 'Facebook' },
+  {
+    href: 'https://www.linkedin.com/in/vallabh-patil-63248b144',
+    icon: linkedIcon,
+    label: 'LinkedIn',
+  },
+  { href: 'https://www.instagram.com/vallabh_patil_777/', icon: instaIcon, label: 'Instagram' },
+]
+
+export default function Footer() {
   return (
-    <footer className="relative z-0 bg-[#090917] text-white flex flex-col items-center justify-center mt-24  px-4">
-      <div className="flex flex-col items-center ">
-        <div className="text-[#854CE6] font-semibold text-[20px] mb-6">
-          Vallabh Patil
-        </div>
-        <div className="links flex gap-16 justify-between items-end mb-10">
-          <a href="https://www.facebook.com/vallabh.patil.92" target="_blank" rel="noopener noreferrer">
+    <footer className="container-page flex flex-col items-center gap-6 border-t border-hairline py-12 text-center">
+      <p className="text-lg font-semibold text-brand-500">Vallabh Patil</p>
 
-            <img src={fbIcon} alt="facebookIcon" className="w-6 h-6" />
-          </a>
-          <a href="https://www.linkedin.com/in/vallabh-patil-63248b144" target="_blank" rel="noopener noreferrer">
-            <img src={linkedIcon} alt="linkedIn" className="w-6 h-6 " />
-          </a>
-          <a href="https://www.instagram.com/vallabh_patil_777/" target="_blank" rel="noopener noreferrer">
-            <img src={instaIcon} alt="instagramIcon" className="w-6 h-6" />
-          </a>
-       
-        </div>
-        <div className="text-sm text-gray-400 mb-4">
-          © 2024 Vallabh Patil. All rights reserved.
-        </div>
-      </div>
+      <ul className="flex items-center gap-8 sm:gap-12">
+        {SOCIALS.map(({ href, icon, label }) => (
+          <li key={label}>
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer me"
+              aria-label={label}
+              className="inline-grid h-11 w-11 place-items-center rounded-full transition-transform duration-300 hover:scale-110 hover:bg-white/5"
+            >
+              <img src={icon} alt="" width={24} height={24} loading="lazy" className="h-6 w-6" />
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <p className="text-sm text-gray-400">
+        © {new Date().getFullYear()} Vallabh Patil. All rights reserved.
+      </p>
     </footer>
-  );
-};
-
-export default Footer;
+  )
+}

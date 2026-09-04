@@ -1,238 +1,121 @@
-import React from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import reacr from "../../assets/react.svg"
-import javascript from "../../assets/javascript.svg"
-import typescript from "../../assets/typescript.svg"
-import css from "../../assets/css.svg"
-import tailwindcss from "../../assets/tailwind-css.svg"
-import redux from "../../assets/redux.svg"
-import java from "../../assets/java-4.svg"
-import html from "../../assets/html.svg"
-import flask from "../../assets/flask.svg"
-import python from "../../assets/python.svg"
-import django from "../../assets/django.svg"
-import springboot from "../../assets/spring-boot.svg"
-import expressjs from "../../assets/express-js.png"
-import nestjs from "../../assets/nest .png"
-import aws from "../../assets/aws-2.svg"
-import docker from "../../assets/docker-4.svg"
-import jira from "../../assets/jira-1.svg"
-import jenkins from "../../assets/jenkins-1.svg"
-import git from "../../assets/git.svg"
-import tensorflow from "../../assets/tensorflow-2.svg"
-import cv from "../../assets/cv.jpg"
-import nlp from "../../assets/nlp.png"
-import ml from "../../assets/ml.png"
-import scikit from "../../assets/scikit.png"
-import pandas from "../../assets/pandas.svg"
-import dnn from "../../assets/dnn.png"
-import datavis from "../../assets/datavis.png"
-import datapre from "../../assets/datapre.png"
-import mysql from "../../assets/mysql-3.svg"
-import oracle from "../../assets/oracle-6.svg"
-import postgres from "../../assets/postgresql.svg"
-import mongodb from "../../assets/mongodb-icon-2.svg"
-import threejs from "../../assets/threejs.png"
-import vscode from "../../assets/visual-studio-code-1.svg"
-import colab from "../../assets/colab.png"
-import pycharm from "../../assets/jetbrains-pycharm.svg"
-import postman from "../../assets/postman.svg"
-import excel from "../../assets/excel.png"
-import spyder from "../../assets/spyder.png"
-import springtool from "../../assets/springtool.jpeg"
-import jupyter from "../../assets/Jupyter_logo.svg.png"
-import fastapi from '../../assets/FastAPI.svg'
-import cursor from '../../assets/cursor.svg'
-import weaviate from '../../assets/weaviate.png'
-import chroma from '../../assets/chroma.webp'
-import langchain from '../../assets/Langchain--Streamline-Simple-Icons.svg'
+import { useCallback, useRef, type PointerEvent } from 'react'
+import SectionHeading from '../common/SectionHeading'
+import Reveal from '../common/Reveal'
+import { skillSets, type SkillSet } from '../../data/skills'
+import { useIsTouch, usePrefersReducedMotion } from '../../hooks/useMediaQuery'
 
+const MAX_TILT_DEG = 12
 
+/** Up to two letters for the lettered tile shown when a skill has no brand icon. */
+function initials(name: string) {
+  // Only alphanumeric words count, so "Faithfulness & Answer Relevancy" reads
+  // "FA" rather than picking up the ampersand.
+  const words = name.split(/[^A-Za-z0-9]+/).filter(Boolean)
+  if (words.length === 0) return '?'
+  if (words.length === 1) return words[0].slice(0, 2)
+  return words[0][0] + words[1][0]
+}
 
+/**
+ * Card with a pointer-tracked 3D tilt.
+ *
+ * The tilt is written straight to CSS custom properties on the element rather
+ * than through React state or framer-motion springs, so pointer movement never
+ * triggers a re-render and the transform stays on the compositor.
+ */
+function SkillCard({ set, tiltEnabled }: { set: SkillSet; tiltEnabled: boolean }) {
+  const cardRef = useRef<HTMLDivElement>(null)
 
+  const handlePointerMove = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      const card = cardRef.current
+      if (!card || !tiltEnabled) return
 
-type Skill = {
-  name: string;
-  image: string; 
-};
+      const rect = card.getBoundingClientRect()
+      const px = (event.clientX - rect.left) / rect.width - 0.5
+      const py = (event.clientY - rect.top) / rect.height - 0.5
 
-const Card = ({
-  title,
-  skills,
-}: {
-  title: string;
-  skills: Skill[];
-}) => {
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
+      card.style.setProperty('--tilt-x', `${(-py * MAX_TILT_DEG * 2).toFixed(2)}deg`)
+      card.style.setProperty('--tilt-y', `${(px * MAX_TILT_DEG * 2).toFixed(2)}deg`)
+    },
+    [tiltEnabled],
+  )
 
-  const mouseXSpring = useSpring(x);
-  const mouseYSpring = useSpring(y);
-
-  const rotateX = useTransform(mouseYSpring, [-0.4, 0.4], ["21.5deg", "-21.5deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.4, 0.4], ["-21.5deg", "21.5deg"]);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-
-    const width = rect.width;
-    const height = rect.height;
-
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    const xPct = mouseX / width - 0.5;
-    const yPct = mouseY / height - 0.5;
-
-    x.set(xPct);
-    y.set(yPct);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
+  const resetTilt = useCallback(() => {
+    const card = cardRef.current
+    if (!card) return
+    card.style.setProperty('--tilt-x', '0deg')
+    card.style.setProperty('--tilt-y', '0deg')
+  }, [])
 
   return (
-    <motion.div
-  onMouseMove={handleMouseMove}
-  onMouseLeave={handleMouseLeave}
-  style={{
-    rotateX,
-    rotateY,
-    transformStyle: "preserve-3d",
-  }}
-  className="  w-full max-w-[500px] bg-[rgba(17,25,40,0.83)] h-auto  border border-[rgba(255,255,255,0.125)] shadow-[0_4px_24px_rgba(23,92,230,0.15)] rounded-[16px] p-[18px_36px] mt-10"
->
-  <h2 className="text-[#bbbdbf] text-center lg:text-[28px] text-[20px] font-semibold m-4">
-    {title}
-  </h2>
-  <div className="flex flex-wrap justify-center gap-2">
-    {skills.map((skill, index) => (
+    <Reveal className="h-full [perspective:1000px]">
       <div
-        key={index}
-        className="flex flex-row items-center bg-[rgba(17,25,40,0.83)] border-[rgba(255,255,255,0.125)] p-3 rounded-[18px] shadow-md flex-grow-0 flex-shrink-1  max-w-[70%] mb-2"
+        ref={cardRef}
+        onPointerMove={tiltEnabled ? handlePointerMove : undefined}
+        onPointerLeave={tiltEnabled ? resetTilt : undefined}
+        style={{ '--tilt-x': '0deg', '--tilt-y': '0deg' } as React.CSSProperties}
+        className="surface-card h-full p-5 transition-transform duration-200 ease-out will-change-transform sm:p-6
+                   [transform:rotateX(var(--tilt-x))_rotateY(var(--tilt-y))] [transform-style:preserve-3d]
+                   motion-reduce:!transform-none"
       >
-        <img
-          src={skill.image}
-          alt={skill.name}
-          className="w-8 h-8 lg:w-10 lg:h-10 object-contain mr-3"
-        />
-        <p className="text-[#a3a6a8] font-sans text-[15px] lg:text-sm">{skill.name}</p>
+        <h3 className="mb-5 text-center text-lg font-semibold text-[#bbbdbf] sm:text-xl lg:text-2xl">
+          {set.title}
+        </h3>
+
+        <ul className="flex flex-wrap justify-center gap-2">
+          {set.skills.map((skill) => (
+            <li
+              key={skill.name}
+              className="flex min-w-0 items-center gap-2 rounded-2xl border border-hairline bg-black/20 px-3 py-2 shadow-sm"
+            >
+              {skill.image ? (
+                <img
+                  src={skill.image}
+                  alt=""
+                  width={40}
+                  height={40}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-6 w-6 shrink-0 object-contain sm:h-8 sm:w-8"
+                />
+              ) : (
+                // Capabilities (RAG, Error Analysis, ...) have no brand mark, so
+                // they get a lettered tile at the same footprint as an icon —
+                // the chips stay the same shape either way.
+                <span
+                  aria-hidden="true"
+                  className="grid h-6 w-6 shrink-0 place-items-center rounded-lg bg-brand-500/20 text-[10px] font-semibold uppercase text-brand-400 sm:h-8 sm:w-8 sm:text-xs"
+                >
+                  {initials(skill.name)}
+                </span>
+              )}
+              <span className="font-sans text-xs text-[#a3a6a8] sm:text-sm">{skill.name}</span>
+            </li>
+          ))}
+        </ul>
       </div>
-    ))}
-  </div>
-</motion.div>
+    </Reveal>
+  )
+}
 
-  );
-};
-
-const Skills = () => {
-  const skillSets = [
-    {
-      title: "Frontend",
-      skills: [
-        { name: "React", image:  reacr},
-        { name: "JavaScript", image: javascript },
-        { name: "TypeScript", image: typescript },
-        { name: "CSS4", image: css },
-        { name: "Tailwind CSS", image: tailwindcss },
-        { name: "Redux Toolkit", image: redux },
-        { name: "ThreeJS", image: threejs },
-        { name: "HTML5", image: html },
-      ],
-    },
-    {
-      title: "Backend",
-      skills: [
-        { name: "Python", image: python },
-        { name: "Java", image: java },
-        { name: "Django", image: django },
-        { name: "SpringBoot", image: springboot },
-        { name: "Flask", image: flask },
-        { name: "ExpressJS", image: expressjs },
-        { name: "NestJS", image: nestjs },
-        { name: "FastAPI", image: fastapi },
-      ],
-    },
-    {
-      title: "Cloud & DevOps",
-      skills: [
-        { name: "AWS", image: aws},
-        { name: "Docker", image: docker },
-        { name: "GitHub", image: git },
-        { name: "Jira", image: jira },
-        { name: "Jenkins", image: jenkins },
-      ],
-    },
-    {
-      title: "AI/ML and Data Analysis",
-      skills: [
-        { name: "TensorFlow", image: tensorflow},
-        { name: "Computer Vision", image: cv },
-        { name: "LangChain", image: langchain },
-        { name: "NLP", image: nlp },
-        { name: "ML Algorithms", image: ml},
-        { name: "Scikit-learn", image:scikit },
-        { name: "Pandas", image: pandas },
-        { name: "Deep Neural Network (DNN)", image: dnn},
-        { name: "Data Visualization", image: datavis },
-        { name: "Data Preprocessing", image: datapre },
-
-
-
-      ],
-    },
-    {
-      title: "Database",
-      skills: [
-        { name: "MySQL", image: mysql},
-        { name: "Oracle Database", image: oracle },
-        { name: "PostgreSQL", image: postgres },
-        { name: "MongoDB", image: mongodb },
-        { name: "Weaviate", image: weaviate },
-        { name: "Chroma", image: chroma },
-      ],
-    },
-    {
-      title: "Tools & Techonologies",
-      skills: [
-        { name: "Cursor", image: cursor},
-        { name: "VS Code", image: vscode},
-        { name: "Postman", image: postman },
-        { name: "SpringToolSuite", image: springtool },
-        { name: "Spyder", image: spyder },
-        { name: "Pycharm", image: pycharm },
-        { name: "GoogleColab", image: colab},
-        { name: "Jupyter Notebook", image: jupyter },
-        { name: "Excel", image: excel },
-      ],
-    },
-  ];
+export default function Skills() {
+  const isTouch = useIsTouch()
+  const prefersReducedMotion = usePrefersReducedMotion()
+  const tiltEnabled = !isTouch && !prefersReducedMotion
 
   return (
-    <div className="relative z-0 inset-0 flex flex-col items-center justify-center mt-24 mb-24">
-      <div className="flex flex-col text-center">
-        <div>
-          <h1 className="font-sans text-white font-semibold text-[30px] sm:text-[52px]">
-            Skills
-          </h1>
-        </div>
-        <div>
-          <h2 className="font-sans text-gray-400  font-medium text-[15px] sm:text-[18px]">
-          An overview of the technical skills acquired through hands-on experience and continuous learning.          </h2>
-        </div>
-      </div>
+    <div className="container-page">
+      <SectionHeading
+        title="Skills"
+        subtitle="An overview of the technical skills acquired through hands-on experience and continuous learning."
+      />
 
-      <div className="flex flex-row   ">
-        <div className=" grid grid-cols-1 sm:grid-cols-2 gap-6 pl-5 pr-5">
-          {skillSets.map((set, index) => (
-            <Card key={index} title={set.title} skills={set.skills} />
-          ))}
-        </div>
+      <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {skillSets.map((set) => (
+          <SkillCard key={set.title} set={set} tiltEnabled={tiltEnabled} />
+        ))}
       </div>
     </div>
-  );
-};
-
-export default Skills;
+  )
+}
