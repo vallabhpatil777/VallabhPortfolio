@@ -1,4 +1,12 @@
-/** Shared between the avatar component and its preloader so the two cannot drift. */
+/**
+ * Shared between the avatar component and its preloader so the two cannot drift.
+ *
+ * IMPORTANT: `netlify.toml` serves this path with `max-age=31536000, immutable`,
+ * and the filename carries no content hash. To ship a new avatar you must give
+ * it a NEW name (`/model.v2.glb`) and change this constant — overwriting
+ * `model.glb` in place would leave every returning visitor on the old model
+ * until their browser cache evicts it, which could be months.
+ */
 export const MODEL_URL = '/model.glb'
 
 /**

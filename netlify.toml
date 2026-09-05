@@ -5,3 +5,48 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+
+# ---------------------------------------------------------------------------
+# Caching
+#
+# Netlify's default for every file is `public, max-age=0, must-revalidate`. That
+# is safe but costs a conditional request on EVERY repeat visit: the browser has
+# to ask, wait a full round trip, and be told "304, unchanged" before it may use
+# what it already has on disk.
+#
+# For the avatar that is three blocking round trips (model + two Draco decoder
+# files) in front of the single heaviest thing on the page. On a mobile
+# connection at ~300 ms RTT that is roughly a second of nothing, on every visit,
+# purely to re-confirm bytes the visitor already has.
+#
+# The bodies are not re-downloaded either way — this buys latency, not bandwidth.
+# ---------------------------------------------------------------------------
+
+# Vite fingerprints these filenames with a content hash, so a changed file is a
+# different URL by construction. Safe to cache forever.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# NOT content-hashed — these live in `public/` and keep a stable name.
+# `immutable` therefore comes with a rule: if you ever replace the avatar or the
+# decoder, RENAME the file (model.v2.glb) and update MODEL_URL / DRACO_PATH in
+# `src/Components/MiddlePart/avatarConfig.ts`. Overwriting in place would leave
+# returning visitors on the old copy until their cache evicts it.
+[[headers]]
+  for = "/model.glb"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/draco/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# The CV is replaced in place from time to time, so it gets revalidation rather
+# than a year-long lock-in.
+[[headers]]
+  for = "/Vallabh-Patil-CV.pdf"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"

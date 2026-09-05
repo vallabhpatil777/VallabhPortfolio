@@ -36,6 +36,20 @@ export class AuthError extends Error {
   }
 }
 
+/**
+ * `/api/chat` answered 404/405 — the serverless function is not being served at
+ * all. That is exactly what plain `vite` does, because the function only exists
+ * under `netlify dev` or on a real deploy. Distinguished from a generic failure
+ * so the UI can say something true instead of "could not reach the assistant",
+ * which reads as an outage when nothing is actually wrong.
+ */
+export class EndpointUnavailableError extends Error {
+  constructor() {
+    super('The /api/chat endpoint is not available on this host.')
+    this.name = 'EndpointUnavailableError'
+  }
+}
+
 /** Groq returned 429, so the UI can suggest waiting rather than retrying hard. */
 export class RateLimitError extends Error {
   constructor() {

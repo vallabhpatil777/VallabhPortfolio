@@ -1,10 +1,17 @@
-import { useCallback, useRef, type PointerEvent } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, type PointerEvent } from 'react'
 import SectionHeading from '../common/SectionHeading'
 import Reveal from '../common/Reveal'
+import ErrorBoundary from '../common/ErrorBoundary'
 import { skillSets, type SkillSet } from '../../data/skills'
-import { useIsTouch, usePrefersReducedMotion } from '../../hooks/useMediaQuery'
+import { useIsMobile, useIsTouch, usePrefersReducedMotion } from '../../hooks/useMediaQuery'
+import { useSpotlight } from '../../hooks/useSpotlight'
 
-const MAX_TILT_DEG = 12
+// Shares the three.js chunk the hero avatar already pulled in, so this adds only
+// its own few hundred bytes — but it is still lazy so it cannot land on the
+// critical path for someone who never scrolls this far.
+const KnowledgeGraph = lazy(() => import('./KnowledgeGraph'))
+
+const MAX_TILT_DEG = 8
 
 /** Up to two letters for the lettered tile shown when a skill has no brand icon. */
 function initials(name: string) {
@@ -17,18 +24,22 @@ function initials(name: string) {
 }
 
 /**
- * Card with a pointer-tracked 3D tilt.
+ * Card with a pointer-tracked 3D tilt and a highlight that follows the cursor.
  *
- * The tilt is written straight to CSS custom properties on the element rather
- * than through React state or framer-motion springs, so pointer movement never
+ * Both effects are written straight to CSS custom properties on the element
+ * rather than through React state or a spring library, so pointer movement never
  * triggers a re-render and the transform stays on the compositor.
  */
-function SkillCard({ set, tiltEnabled }: { set: SkillSet; tiltEnabled: boolean }) {
-  const cardRef = useRef<HTMLDivElement>(null)
+function SkillCard({ set, index, tiltEnabled }: { set: SkillSet; index: number; tiltEnabled: boolean }) {
+  const spotlight = useSpotlight<HTMLDivElement>()
 
   const handlePointerMove = useCallback(
     (event: PointerEvent<HTMLDivElement>) => {
-      const card = cardRef.current
+      // The highlight is worth having on its own, so it runs whether or not the
+      // tilt does.
+      spotlight.onPointerMove(event)
+
+      const card = spotlight.ref.current
       if (!card || !tiltEnabled) return
 
       const rect = card.getBoundingClientRect()
@@ -38,36 +49,44 @@ function SkillCard({ set, tiltEnabled }: { set: SkillSet; tiltEnabled: boolean }
       card.style.setProperty('--tilt-x', `${(-py * MAX_TILT_DEG * 2).toFixed(2)}deg`)
       card.style.setProperty('--tilt-y', `${(px * MAX_TILT_DEG * 2).toFixed(2)}deg`)
     },
-    [tiltEnabled],
+    [spotlight, tiltEnabled],
   )
 
   const resetTilt = useCallback(() => {
-    const card = cardRef.current
+    const card = spotlight.ref.current
     if (!card) return
     card.style.setProperty('--tilt-x', '0deg')
     card.style.setProperty('--tilt-y', '0deg')
-  }, [])
+  }, [spotlight])
 
   return (
-    <Reveal className="h-full [perspective:1000px]">
+    <Reveal delay={Math.min(index, 5) * 70} className="h-full [perspective:1200px]">
       <div
-        ref={cardRef}
-        onPointerMove={tiltEnabled ? handlePointerMove : undefined}
-        onPointerLeave={tiltEnabled ? resetTilt : undefined}
+        ref={spotlight.ref}
+        onPointerMove={handlePointerMove}
+        onPointerLeave={resetTilt}
         style={{ '--tilt-x': '0deg', '--tilt-y': '0deg' } as React.CSSProperties}
-        className="surface-card h-full p-5 transition-transform duration-200 ease-out will-change-transform sm:p-6
-                   [transform:rotateX(var(--tilt-x))_rotateY(var(--tilt-y))] [transform-style:preserve-3d]
+        className="surface-card spotlight h-full p-5 transition-[transform,box-shadow,border-color] duration-300 ease-out
+                   will-change-transform hover:border-brand-500/40 hover:shadow-card-hover sm:p-6
+                   [transform:rotateX(var(--tilt-x))_rotateY(var(--tilt-y))]
                    motion-reduce:!transform-none"
       >
-        <h3 className="mb-5 text-center text-lg font-semibold text-[#bbbdbf] sm:text-xl lg:text-2xl">
-          {set.title}
-        </h3>
+        <div className="mb-5 flex items-center justify-center gap-3">
+          <span aria-hidden="true" className="h-px w-6 bg-gradient-to-r from-transparent to-brand-500/60" />
+          <h3 className="text-center text-base font-semibold text-white sm:text-lg lg:text-xl">
+            {set.title}
+          </h3>
+          <span aria-hidden="true" className="h-px w-6 bg-gradient-to-l from-transparent to-brand-500/60" />
+        </div>
 
         <ul className="flex flex-wrap justify-center gap-2">
           {set.skills.map((skill) => (
             <li
               key={skill.name}
-              className="flex min-w-0 items-center gap-2 rounded-2xl border border-hairline bg-black/20 px-3 py-2 shadow-sm"
+              className="flex min-w-0 items-center gap-2 rounded-xl border border-hairline bg-black/25 px-3 py-2
+                         transition-[transform,background-color,border-color] duration-300 ease-spring
+                         hover:-translate-y-0.5 hover:border-brand-500/40 hover:bg-brand-500/10
+                         motion-reduce:hover:translate-y-0"
             >
               {skill.image ? (
                 <img
@@ -77,7 +96,7 @@ function SkillCard({ set, tiltEnabled }: { set: SkillSet; tiltEnabled: boolean }
                   height={40}
                   loading="lazy"
                   decoding="async"
-                  className="h-6 w-6 shrink-0 object-contain sm:h-8 sm:w-8"
+                  className="h-6 w-6 shrink-0 object-contain sm:h-7 sm:w-7"
                 />
               ) : (
                 // Capabilities (RAG, Error Analysis, ...) have no brand mark, so
@@ -85,12 +104,12 @@ function SkillCard({ set, tiltEnabled }: { set: SkillSet; tiltEnabled: boolean }
                 // the chips stay the same shape either way.
                 <span
                   aria-hidden="true"
-                  className="grid h-6 w-6 shrink-0 place-items-center rounded-lg bg-brand-500/20 text-[10px] font-semibold uppercase text-brand-400 sm:h-8 sm:w-8 sm:text-xs"
+                  className="grid h-6 w-6 shrink-0 place-items-center rounded-lg bg-brand-500/20 text-[10px] font-semibold uppercase text-brand-300 sm:h-7 sm:w-7 sm:text-xs"
                 >
                   {initials(skill.name)}
                 </span>
               )}
-              <span className="font-sans text-xs text-[#a3a6a8] sm:text-sm">{skill.name}</span>
+              <span className="font-sans text-xs text-gray-300 sm:text-sm">{skill.name}</span>
             </li>
           ))}
         </ul>
@@ -101,19 +120,67 @@ function SkillCard({ set, tiltEnabled }: { set: SkillSet; tiltEnabled: boolean }
 
 export default function Skills() {
   const isTouch = useIsTouch()
+  const isMobile = useIsMobile()
   const prefersReducedMotion = usePrefersReducedMotion()
   const tiltEnabled = !isTouch && !prefersReducedMotion
 
+  const graphRef = useRef<HTMLDivElement>(null)
+  const [graphInView, setGraphInView] = useState(false)
+  const [graphSeen, setGraphSeen] = useState(false)
+
+  // Mount the graph only once the section approaches, and stop its render loop
+  // the moment it leaves — the same discipline the hero avatar uses, so two
+  // canvases are never both drawing at once during normal scrolling.
+  useEffect(() => {
+    const node = graphRef.current
+    if (!node) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setGraphInView(entry.isIntersecting)
+        if (entry.isIntersecting) setGraphSeen(true)
+      },
+      { rootMargin: '150px 0px', threshold: 0.01 },
+    )
+
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <div className="container-page">
-      <SectionHeading
-        title="Skills"
-        subtitle="An overview of the technical skills acquired through hands-on experience and continuous learning."
-      />
+      {/* Ambient graph behind the heading. `-z-10` puts it behind the copy but
+          still above the page backdrop, and the radial mask fades it out before
+          it reaches the text so the heading never loses contrast. */}
+      <div className="relative">
+        <div
+          ref={graphRef}
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-1/2 -z-10 hidden h-[420px] w-[min(90vw,560px)] -translate-x-1/2 -translate-y-1/2 opacity-70 sm:block"
+          style={{
+            maskImage: 'radial-gradient(closest-side, #000 35%, transparent 78%)',
+            WebkitMaskImage: 'radial-gradient(closest-side, #000 35%, transparent 78%)',
+          }}
+        >
+          {graphSeen && !prefersReducedMotion && (
+            <ErrorBoundary label="KnowledgeGraph" fallback={null}>
+              <Suspense fallback={null}>
+                <KnowledgeGraph active={graphInView} animate={!isMobile} />
+              </Suspense>
+            </ErrorBoundary>
+          )}
+        </div>
 
-      <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {skillSets.map((set) => (
-          <SkillCard key={set.title} set={set} tiltEnabled={tiltEnabled} />
+        <SectionHeading
+          eyebrow="What I work with"
+          title="Skills"
+          subtitle="An overview of the technical skills acquired through hands-on experience and continuous learning."
+        />
+      </div>
+
+      <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {skillSets.map((set, index) => (
+          <SkillCard key={set.title} set={set} index={index} tiltEnabled={tiltEnabled} />
         ))}
       </div>
     </div>

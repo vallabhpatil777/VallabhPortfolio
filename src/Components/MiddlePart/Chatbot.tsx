@@ -3,6 +3,7 @@ import MarkdownIt from 'markdown-it'
 import chatIcon from '../../assets/chatbot.svg'
 import {
   AuthError,
+  EndpointUnavailableError,
   MissingApiKeyError,
   RateLimitError,
   sendChat,
@@ -10,6 +11,9 @@ import {
 } from '../lib/groqClient'
 
 const GREETING = "Hello! I'm Vallabh's assistant — ask me about his experience, skills or projects."
+
+/** The speech bubble beside the launcher, before the panel is opened. */
+const LAUNCHER_HINT = 'Hello! Nice to meet you, I am Vallabh Patil 👋'
 
 type Bubble = { id: number; role: 'user' | 'assistant'; content: string }
 
@@ -24,6 +28,13 @@ function errorMessageFor(caught: unknown): string {
   }
   if (caught instanceof RateLimitError) {
     return 'The assistant is busy right now — please wait a moment and try again.'
+  }
+  if (caught instanceof EndpointUnavailableError) {
+    // The local dev case is a setup issue, not an outage, so say so plainly
+    // rather than making it look like the deployed assistant is down.
+    return import.meta.env.DEV
+      ? 'The assistant API is not running on this dev server. `/api/chat` is a Netlify Function — start the site with `netlify dev`, or put VITE_GROQ_API_KEY in .env to call Groq directly.'
+      : 'The assistant is unavailable on this deployment. Please use the contact form instead.'
   }
   return 'Sorry — I could not reach the assistant. Please try again in a moment.'
 }
@@ -164,8 +175,8 @@ export default function Chatbot() {
         }`}
       >
         {showHint && !isOpen && (
-          <span className="hidden rounded-lg border border-brand-500 bg-brand-500 px-3 py-2 text-sm text-white shadow-lg sm:block">
-            How may I help you?
+          <span className="hidden animate-fade-up rounded-full border border-brand-500/40 bg-ink/85 px-4 py-2 text-sm text-white shadow-glow-sm backdrop-blur-md sm:block">
+            {LAUNCHER_HINT}
           </span>
         )}
         {/* Original styling: the icon artwork alone, no coloured circle behind it. */}
@@ -196,7 +207,7 @@ export default function Chatbot() {
           // The third `min()` term is what keeps the header on screen in a short
           // landscape viewport: without it, `bottom-28` plus a 70dvh panel put
           // the title bar above y=0 at 360px tall.
-          className="fixed inset-x-3 bottom-3 z-50 flex h-[min(78dvh,34rem)] max-h-[calc(100dvh-1.5rem)] min-h-0 flex-col overflow-hidden rounded-xl border border-hairline bg-gray-900 shadow-2xl sm:inset-x-auto sm:bottom-28 sm:right-6 sm:h-auto sm:max-h-[min(70dvh,32rem,calc(100dvh-8.5rem))] sm:w-[calc(100vw-3rem)] sm:max-w-sm"
+          className="fixed inset-x-3 bottom-3 z-50 flex h-[min(78dvh,34rem)] max-h-[calc(100dvh-1.5rem)] min-h-0 animate-fade-up flex-col overflow-hidden rounded-2xl border border-hairline bg-ink/95 shadow-[0_24px_60px_-12px_rgba(0,0,0,0.8)] backdrop-blur-xl sm:inset-x-auto sm:bottom-28 sm:right-6 sm:h-auto sm:max-h-[min(70dvh,32rem,calc(100dvh-8.5rem))] sm:w-[calc(100vw-3rem)] sm:max-w-sm"
           style={
             keyboardInset > 0
               ? {
@@ -207,7 +218,13 @@ export default function Chatbot() {
           }
         >
           <div className="flex shrink-0 items-center justify-between gap-2 bg-gradient-to-r from-brand-500 to-brand-700 px-4 py-3 text-white">
-            <h2 className="truncate text-base font-semibold">Chat with Me</h2>
+            <h2 className="flex min-w-0 items-center gap-2 truncate text-base font-semibold">
+              <span aria-hidden="true" className="relative flex h-2 w-2 shrink-0">
+                <span className="absolute inline-flex h-full w-full animate-pulse-ring rounded-full bg-emerald-300 motion-reduce:hidden" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-300" />
+              </span>
+              Chat with Me
+            </h2>
             <button
               type="button"
               onClick={closeChat}
@@ -223,13 +240,13 @@ export default function Chatbot() {
             role="log"
             aria-live="polite"
             aria-atomic="false"
-            className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain bg-gray-900 p-3 sm:p-4"
+            className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain bg-black/20 p-3 sm:p-4"
           >
             {messages.map((message) =>
               message.role === 'user' ? (
                 <p
                   key={message.id}
-                  className="ml-auto w-fit max-w-[85%] whitespace-pre-wrap break-words rounded-2xl rounded-br-sm bg-white px-3 py-2 text-sm text-gray-900"
+                  className="ml-auto w-fit max-w-[85%] whitespace-pre-wrap break-words rounded-2xl rounded-br-sm bg-white px-3 py-2 text-sm text-gray-900 shadow-sm"
                 >
                   {message.content}
                 </p>
@@ -269,7 +286,7 @@ export default function Chatbot() {
               event.preventDefault()
               void handleSend()
             }}
-            className="flex shrink-0 items-center gap-2 border-t border-hairline bg-gray-800 p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]"
+            className="flex shrink-0 items-center gap-2 border-t border-hairline bg-white/[0.03] p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]"
           >
             <label htmlFor="chat-input" className="sr-only">
               Message
@@ -284,15 +301,17 @@ export default function Chatbot() {
               onChange={(event) => setInput(event.target.value)}
               placeholder="Type your message…"
               autoComplete="off"
-              className="min-w-0 flex-1 rounded-lg bg-gray-700 px-3 py-2 text-base text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 sm:text-sm"
+              className="min-w-0 flex-1 rounded-xl border border-hairline bg-black/30 px-3 py-2 text-base text-white placeholder:text-gray-500 transition-colors focus:border-brand-500 focus:outline-none sm:text-sm"
             />
             <button
               type="submit"
               disabled={isSending || !input.trim()}
               aria-label="Send message"
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-gradient-to-r from-brand-500 to-brand-700 text-white transition hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-50"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-r from-brand-500 to-brand-700 text-white transition-[transform,opacity] duration-300 ease-spring hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 motion-reduce:hover:scale-100"
             >
-              ➤
+              <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
+                <path d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z" />
+              </svg>
             </button>
           </form>
         </div>

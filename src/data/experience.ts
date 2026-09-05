@@ -1,3 +1,4 @@
+import nsConsultants from '../assets/ns-consultants.webp'
 import risidio from '../assets/risidio.webp'
 import accenture from '../assets/accenture.webp'
 import type { TimelineEntry } from '../Components/common/Timeline'
@@ -12,8 +13,11 @@ export const experience: TimelineEntry[] = [
       'Led development of an AI-powered platform for medico-legal expert search, reducing manual CV matching time by ~60-70%. Built a RAG-based system to retrieve and rank expert profiles, improving relevance and reducing manual filtering effort. Developed backend services using Python (FastAPI) with PostgreSQL and Redis, improving response times by ~30%. Implemented automated expert recommendation and quote generation, reducing processing time by ~40%. Evaluated model outputs to identify failure cases and improve retrieval quality through prompt and search optimisation. Designed and deployed the system end-to-end, including architecture, frontend (React), and monitoring with Prometheus.',
     metaLabel: 'Skills',
     meta: 'Python • FastAPI • RAG • LLMs • PostgreSQL • Redis • React • Prometheus • Prompt Optimisation • Model Evaluation • System Architecture • End-to-End Deployment',
-    // No brand logo available for this employer — the timeline renders a
-    // monogram medallion instead.
+    logo: nsConsultants,
+    // A wide 2:1 mark with a dark navy half. `cover` would crop it to the
+    // meaningless middle of the infinity loop, and the navy would vanish against
+    // the dark medallion — so it gets letterboxed on white instead.
+    logoFit: 'contain',
   },
   {
     id: 1,

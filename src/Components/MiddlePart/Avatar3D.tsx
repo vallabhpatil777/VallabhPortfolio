@@ -1,13 +1,23 @@
-import { useEffect, useMemo, useRef } from 'react'
-import { Canvas } from '@react-three/fiber'
-import { useAnimations, useGLTF, useProgress } from '@react-three/drei'
-import { LoopOnce, LoopRepeat, type AnimationAction, type Group } from 'three'
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { ContactShadows, useAnimations, useGLTF } from '@react-three/drei'
+import {
+  Cache,
+  LoopOnce,
+  LoopRepeat,
+  MathUtils,
+  type AnimationAction,
+  type Group,
+  type Points,
+} from 'three'
 import { DRACO_PATH, MODEL_URL } from './avatarConfig'
+import { primeLoaderCache, releaseAvatarBytes } from './avatarPreload'
+import { AvatarLoadingStage } from './AvatarStage'
 
 const pickClip = (names: string[], wanted: string, fallbackIndex: number) =>
   names.find((name) => name.toLowerCase() === wanted) ?? names[fallbackIndex] ?? names[0]
 
-function Model({ interactive }: { interactive: boolean }) {
+function Model({ interactive, onReady }: { interactive: boolean; onReady: () => void }) {
   const group = useRef<Group>(null)
   const { scene, animations } = useGLTF(MODEL_URL, DRACO_PATH)
   const { actions, mixer } = useAnimations(animations, group)
@@ -20,6 +30,22 @@ function Model({ interactive }: { interactive: boolean }) {
       stagger: pickClip(names, 'stagger', 2),
     }
   }, [animations])
+
+  // This component only mounts once `useGLTF` has resolved *and* parsed, so this
+  // is the exact moment the avatar becomes real. Two frames of slack let the
+  // renderer actually draw it before the parent cross-fades the canvas in —
+  // otherwise the fade reveals one blank frame first, which is the flicker the
+  // whole loading treatment exists to remove.
+  useEffect(() => {
+    let inner = 0
+    const outer = requestAnimationFrame(() => {
+      inner = requestAnimationFrame(onReady)
+    })
+    return () => {
+      cancelAnimationFrame(outer)
+      cancelAnimationFrame(inner)
+    }
+  }, [onReady])
 
   // Intro sequence: crouch once, then settle into the looping wave.
   useEffect(() => {
@@ -104,24 +130,81 @@ function Model({ interactive }: { interactive: boolean }) {
   )
 }
 
-/** Percentage read-out driven by the real GLTF download progress. */
-function LoadingOverlay() {
-  const { active, progress } = useProgress()
-  if (!active) return null
+/**
+ * Drifting point cloud behind the avatar.
+ *
+ * Costs no extra bytes — three.js is already here for the model — and gives the
+ * stage depth, so the avatar reads as standing *in* something rather than
+ * floating on a flat panel. Sits at negative Z so it can never occlude the
+ * model, and opts out of raycasting so it cannot steal the click that plays the
+ * reaction animation.
+ */
+function ParticleField({ count, animate }: { count: number; animate: boolean }) {
+  const ref = useRef<Points>(null)
+
+  const positions = useMemo(() => {
+    const array = new Float32Array(count * 3)
+    for (let i = 0; i < count; i += 1) {
+      array[i * 3] = (Math.random() - 0.5) * 20
+      array[i * 3 + 1] = (Math.random() - 0.5) * 16
+      // Pushed to z <= -6 for two reasons: it keeps the field behind the model,
+      // and it puts every particle outside the ContactShadows ortho frustum
+      // below (9 units wide, so z from -4.5 to 4.5). That matters because
+      // ContactShadows renders the *whole* scene through an override depth
+      // material with no way to exclude an object — any particle inside its
+      // frustum would speckle the shadow under the avatar's feet.
+      array[i * 3 + 2] = -6 - Math.random() * 10
+    }
+    return array
+  }, [count])
+
+  useFrame((state, delta) => {
+    const points = ref.current
+    if (!points || !animate) return
+    points.rotation.y += delta * 0.02
+    // Parallax toward the pointer. `lerp` rather than a direct set, so the field
+    // trails the cursor instead of snapping to it.
+    points.position.x = MathUtils.lerp(points.position.x, state.pointer.x * 0.5, 0.04)
+    points.position.y = MathUtils.lerp(points.position.y, state.pointer.y * 0.3, 0.04)
+  })
 
   return (
-    <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-3">
-      <div
-        className="h-12 w-12 animate-spin rounded-full border-2 border-white/15 border-t-brand-500"
-        role="progressbar"
-        aria-valuenow={Math.round(progress)}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-label="Loading 3D avatar"
+    <points ref={ref} raycast={() => null}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+      </bufferGeometry>
+      <pointsMaterial
+        size={0.06}
+        color="#9d6ef0"
+        transparent
+        opacity={0.75}
+        sizeAttenuation
+        // Points overlap heavily; without this they punch holes in each other.
+        depthWrite={false}
       />
-      <span className="text-sm tabular-nums text-gray-400">{Math.round(progress)}%</span>
-    </div>
+    </points>
   )
+}
+
+/**
+ * Eases the camera back as the hero scrolls away, for a little parallax depth.
+ *
+ * Reads `window.scrollY` inside the frame loop rather than from a scroll
+ * listener: the loop is already running (and is stopped entirely once the hero
+ * leaves the viewport), so this adds no listener and cannot fire while the
+ * canvas is idle.
+ */
+function ScrollDolly({ enabled }: { enabled: boolean }) {
+  const camera = useThree((state) => state.camera)
+
+  useFrame(() => {
+    if (!enabled) return
+    const progress = Math.min(1, Math.max(0, window.scrollY / window.innerHeight))
+    camera.position.z = MathUtils.lerp(camera.position.z, 10 + progress * 1.8, 0.08)
+    camera.position.y = MathUtils.lerp(camera.position.y, 2 + progress * 0.5, 0.08)
+  })
+
+  return null
 }
 
 type Props = {
@@ -132,40 +215,106 @@ type Props = {
 }
 
 export default function Avatar3D({ active, highQuality }: Props) {
+  const [ready, setReady] = useState(false)
+  const [primed, setPrimed] = useState(false)
+
+  // `useGLTF` must not run until the pre-fetched bytes are sitting in three's
+  // loader cache — otherwise GLTFLoader starts its own request for the same file
+  // and the visitor downloads the model twice. `primeLoaderCache` resolves either
+  // way (it is a no-op when the pre-fetch failed), so this can never deadlock.
+  useEffect(() => {
+    let cancelled = false
+    void primeLoaderCache(Cache).then(() => {
+      if (!cancelled) setPrimed(true)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const handleReady = useCallback(() => {
+    setReady(true)
+    // The raw GLB bytes have done their job; drei holds the parsed scene now.
+    releaseAvatarBytes(Cache)
+  }, [])
+
   return (
-    <>
-      <Canvas
-        // `never` fully stops the render loop once the hero leaves the viewport,
-        // so the GPU is idle while the visitor reads the rest of the page.
-        frameloop={active ? 'always' : 'never'}
-        shadows={highQuality}
-        camera={{ position: [0, 2, 10], fov: 35 }}
-        // Cap the device pixel ratio: retina phones would otherwise render 3x.
-        dpr={[1, highQuality ? 1.75 : 1.25]}
-        performance={{ min: 0.5 }}
-        gl={{ antialias: highQuality, powerPreference: 'high-performance' }}
+    <div className="relative h-full w-full">
+      {/* The canvas mounts immediately — only `Model` suspends, and it does so
+          against the boundary *inside* the canvas below. That is what lets the
+          progress UI stay on screen instead of the whole component being
+          replaced by a bare fallback.
+
+          NEVER put a CSS transform on this element or any ancestor of the
+          canvas. react-three-fiber measures the canvas with
+          `getBoundingClientRect()` (which returns the *transformed* box) but
+          raycasts using `event.offsetX / size.width` — and `offsetX` is in the
+          element's own untransformed coordinates. A `scale(0.9)` here therefore
+          skews every pointer ray by ~11%, and because a transform change does
+          not fire a ResizeObserver, the wrong size sticks even after the scale
+          returns to 1. That is what silently broke click-to-react on the model.
+          Fade with opacity only; the scale-in lives on the loading overlay,
+          which contains no canvas. */}
+      <div
+        className={`h-full w-full transition-opacity duration-700 ease-out ${
+          ready ? 'opacity-100' : 'opacity-0'
+        }`}
       >
-        <ambientLight intensity={1.7} />
-        <spotLight
-          position={[10, 10, 10]}
-          angle={0.5}
-          penumbra={0.5}
-          intensity={2}
-          castShadow={highQuality}
-          shadow-mapSize={[1024, 1024]}
-          shadow-bias={-0.0001}
-        />
-        {/* Fill light only — no second shadow map to render. */}
-        <directionalLight position={[-5, 5, 5]} intensity={0.6} />
+        <Canvas
+          // `never` fully stops the render loop once the hero leaves the viewport,
+          // so the GPU is idle while the visitor reads the rest of the page.
+          frameloop={active ? 'always' : 'never'}
+          shadows={highQuality}
+          camera={{ position: [0, 2, 10], fov: 35 }}
+          // Cap the device pixel ratio: retina phones would otherwise render 3x.
+          dpr={[1, highQuality ? 1.75 : 1.25]}
+          performance={{ min: 0.5 }}
+          gl={{ antialias: highQuality, powerPreference: 'high-performance' }}
+        >
+          <ambientLight intensity={1.7} />
+          <spotLight
+            position={[10, 10, 10]}
+            angle={0.5}
+            penumbra={0.5}
+            intensity={2}
+            castShadow={highQuality}
+            shadow-mapSize={[1024, 1024]}
+            shadow-bias={-0.0001}
+          />
+          {/* Fill light only — no second shadow map to render. */}
+          <directionalLight position={[-5, 5, 5]} intensity={0.6} />
 
-        <mesh position={[0.3, -2.3, 0]} receiveShadow>
-          <cylinderGeometry args={[1.1, 1.4, 0.2, 48]} />
-          <meshStandardMaterial color="#5B595E" />
-        </mesh>
+          {/* Replaces the flat grey cylinder that used to stand in for a floor.
+              A real contact shadow grounds the model instead of parking it on a
+              disc, and costs one small render-target pass. */}
+          <ContactShadows
+            position={[0, -2.26, 0]}
+            scale={9}
+            far={3}
+            blur={2.6}
+            opacity={0.7}
+            resolution={highQuality ? 512 : 256}
+            color="#05030f"
+          />
 
-        <Model interactive={active} />
-      </Canvas>
-      <LoadingOverlay />
-    </>
+          <ParticleField count={highQuality ? 700 : 260} animate={highQuality} />
+          <ScrollDolly enabled={highQuality} />
+
+          <Suspense fallback={null}>
+            {primed && <Model interactive={active} onReady={handleReady} />}
+          </Suspense>
+        </Canvas>
+      </div>
+
+      {/* Cross-fade rather than an abrupt swap. The scale lives here, on the
+          overlay, precisely because this subtree holds no canvas. */}
+      <div
+        className={`absolute inset-0 transition-[opacity,transform] duration-500 ease-spring ${
+          ready ? 'pointer-events-none scale-105 opacity-0' : 'scale-100 opacity-100'
+        }`}
+      >
+        {!ready && <AvatarLoadingStage />}
+      </div>
+    </div>
   )
 }
